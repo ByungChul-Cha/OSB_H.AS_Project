@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'camera.dart';
+import 'community.dart';
+import 'search.dart';
+import 'settings.dart';
 // 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
 
 void main() {
@@ -48,21 +53,14 @@ class MyHomePage extends StatelessWidget {
             //유저 정보 그려주는 코드
 
             ListTile(
-              leading: const Icon(Icons.home),
-              iconColor: Colors.black,
-              focusColor: Colors.black,
-              title: const Text('홈'),
-              onTap: () {},
-              trailing: const Icon(Icons.navigate_next),
-            ),
-            //메뉴에 홈 창을 만듦
-
-            ListTile(
               leading: const Icon(Icons.search),
               iconColor: Colors.black,
               focusColor: Colors.black,
               title: const Text('식별 검색'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Search()));
+              },
               trailing: const Icon(Icons.navigate_next),
             ),
             //메뉴에 식별 검색 창을 만듦
@@ -72,7 +70,10 @@ class MyHomePage extends StatelessWidget {
               iconColor: Colors.black,
               focusColor: Colors.black,
               title: const Text('카메라로 검색'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Camera()));
+              },
               trailing: const Icon(Icons.navigate_next),
             ),
             //메뉴에 카메라로 검색 창을 만듦
@@ -82,7 +83,10 @@ class MyHomePage extends StatelessWidget {
               iconColor: Colors.black,
               focusColor: Colors.black,
               title: const Text('커뮤니티'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Community()));
+              },
               trailing: const Icon(Icons.navigate_next),
             ),
             //메뉴에  커뮤니티 창을 만듦
@@ -92,7 +96,10 @@ class MyHomePage extends StatelessWidget {
               iconColor: Colors.black,
               focusColor: Colors.black,
               title: const Text('환경설정'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Settings()));
+              },
               trailing: const Icon(Icons.navigate_next),
             ),
             //메뉴에 환경설정 창을 만듦
