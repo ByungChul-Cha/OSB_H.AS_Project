@@ -96,7 +96,7 @@ class MyHomePage extends StatelessWidget {
             ),
             //메뉴에  커뮤니티 창을 만듦
 
-            ListTile(
+            /*ListTile(
               leading: const Icon(Icons.settings),
               iconColor: Colors.black,
               focusColor: Colors.black,
@@ -107,7 +107,7 @@ class MyHomePage extends StatelessWidget {
               },
               trailing: const Icon(Icons.navigate_next),
             ),
-            //메뉴에 환경설정 창을 만듦
+            //메뉴에 환경설정 창을 만듦*/
           ],
         ),
       ),
