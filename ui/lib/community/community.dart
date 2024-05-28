@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:has_app/community/community_post.dart';
 
 class Community extends StatelessWidget {
   @override
@@ -48,14 +48,43 @@ class _CommunityBoardState extends State<CommunityBoard> {
                 itemBuilder: (context, index) {
                   final post = posts[index];
                   return ListTile(
-                    title: Text(post['content']),
+                    title: Text(post['title']),
                   );
                 },
               );
             },
           ),
         ),
-        Padding(
+        GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CommunityPostBoard()));
+            },
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                margin: EdgeInsets.all(30),
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(1000),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(1.0),
+                      spreadRadius: 2,
+                      blurRadius: 2,
+                      offset: Offset(-0.5, 0.5),
+                    ),
+                  ],
+                ),
+                child: Icon(Icons.add),
+              ),
+            )),
+        // 하단 추가 버튼
+        /*Padding(
           padding: const EdgeInsets.all(8.0),
           // 이전 글의 8.0만큼 떨어진 위치에 저장
           child: Row(
@@ -82,6 +111,7 @@ class _CommunityBoardState extends State<CommunityBoard> {
             ],
           ),
         ),
+        // 하단 입력 부분*/
       ],
     );
   }
