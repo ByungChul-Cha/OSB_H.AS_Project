@@ -18,10 +18,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -29,15 +26,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -66,4 +57,34 @@ class DefaultFirebaseOptions {
     storageBucket: 'osb-project-9307e.appspot.com',
     iosBundleId: 'com.example.hasApp',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCyDjNzHG2Uwt5rHb-y02PcSzjOjnKUdjs',
+    appId: '1:85019325480:web:6831d0d4ccbc54d18c311d',
+    messagingSenderId: '85019325480',
+    projectId: 'osb-project-9307e',
+    authDomain: 'osb-project-9307e.firebaseapp.com',
+    storageBucket: 'osb-project-9307e.appspot.com',
+    measurementId: 'G-GJXJKQCQGD',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyA8WWlDZCHfjDQth_LP-idx-uojcg283L4',
+    appId: '1:85019325480:ios:546f0cced0816f3a8c311d',
+    messagingSenderId: '85019325480',
+    projectId: 'osb-project-9307e',
+    storageBucket: 'osb-project-9307e.appspot.com',
+    iosBundleId: 'com.example.hasApp',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyCyDjNzHG2Uwt5rHb-y02PcSzjOjnKUdjs',
+    appId: '1:85019325480:web:121c47bfc55ca3818c311d',
+    messagingSenderId: '85019325480',
+    projectId: 'osb-project-9307e',
+    authDomain: 'osb-project-9307e.firebaseapp.com',
+    storageBucket: 'osb-project-9307e.appspot.com',
+    measurementId: 'G-H981VNDLQP',
+  );
+
 }
