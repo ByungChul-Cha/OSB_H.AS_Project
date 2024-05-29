@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/main.dart';
+import 'package:has_app/userInfo/signup.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -28,6 +29,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _navigateToSignUP() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignUpScreen()),
+    );
+    // 회원가입 화면으로 이동하기 위한 함수
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,10 +53,17 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _pwController,
               decoration: const InputDecoration(labelText: '비밀번호'),
               obscureText: true,
+              // 비밀번호는 *로 표시하기 위함
             ),
+            Padding(padding: EdgeInsets.only(top: 16.0)),
             ElevatedButton(
               onPressed: _login,
               child: const Text('로그인'),
+            ),
+            Padding(padding: EdgeInsets.only(top: 16.0)),
+            ElevatedButton(
+              onPressed: _navigateToSignUP,
+              child: const Text('회원가입'),
             ),
           ],
         ),

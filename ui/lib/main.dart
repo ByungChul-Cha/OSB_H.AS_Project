@@ -4,8 +4,8 @@ import 'package:has_app/userInfo/login.dart';
 import 'camera.dart';
 import 'community/community.dart';
 import 'search.dart';
-import 'settings.dart';
 // 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
+//import 'settings.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
