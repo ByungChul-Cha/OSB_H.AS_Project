@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/main.dart';
 import 'package:has_app/userInfo/signup.dart';
@@ -54,12 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
               obscureText: true,
               // 비밀번호는 *로 표시하기 위함
             ),
-            const Padding(padding: EdgeInsets.only(top: 16.0)),
+            Padding(padding: EdgeInsets.only(top: 16.0)),
             ElevatedButton(
               onPressed: _login,
               child: const Text('로그인'),
             ),
-            const Padding(padding: EdgeInsets.only(top: 16.0)),
             ElevatedButton(
               onPressed: _navigateToSignUP,
               child: const Text('회원가입'),
