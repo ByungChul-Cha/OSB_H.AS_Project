@@ -78,6 +78,7 @@ class _CommunityBoardState extends State<CommunityBoard> {
                       blurRadius: 2,
                       offset: Offset(-0.5, 0.5),
                     ),
+                    // 그림자 효과
                   ],
                 ),
                 child: Icon(Icons.add),

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:has_app/userInfo/login.dart';
 
 import 'camera.dart';
 import 'community/community.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'H.AS App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
+      home: LoginScreen(),
     );
   }
 }
