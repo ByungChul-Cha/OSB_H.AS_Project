@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'H.AS App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginScreen(),
+      home: MyHomePage(),
     );
   }
 }
@@ -114,8 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
               focusColor: Colors.black,
               title: const Text('카메라로 검색'),
               onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Camera()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CameraApp()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),
