@@ -57,7 +57,7 @@ class _CommunityBoardState extends State<CommunityBoard> {
         ),
         GestureDetector(
             onTap: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => CommunityPostBoard()));
