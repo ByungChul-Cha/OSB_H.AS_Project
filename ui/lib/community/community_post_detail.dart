@@ -12,6 +12,7 @@ class CommunityPostDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     bool isAuthor = post['authorId'] == currentUserId;
+    List<dynamic> imageUrls = post['imageUrls'] ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -46,19 +47,31 @@ class CommunityPostDetail extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              post['title'],
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              post['content'],
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                post['title'],
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                post['content'],
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              SizedBox(height: 16.0),
+              for (var imageUrl in imageUrls)
+                if (imageUrl != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+            ],
+          ),
         ),
       ),
     );
