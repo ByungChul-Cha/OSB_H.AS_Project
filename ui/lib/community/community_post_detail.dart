@@ -20,7 +20,7 @@ class CommunityPostDetail extends StatelessWidget {
         actions: <Widget>[
           if (isAuthor)
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -31,7 +31,7 @@ class CommunityPostDetail extends StatelessWidget {
             ),
           if (isAuthor)
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 // 삭제 기능
                 FirebaseFirestore.instance
@@ -46,7 +46,7 @@ class CommunityPostDetail extends StatelessWidget {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,12 +71,12 @@ class CommunityPostDetail extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Text(
                 post['content'],
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               for (var imageUrl in imageUrls)
                 if (imageUrl != null)
                   Padding(

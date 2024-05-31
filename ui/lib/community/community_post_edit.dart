@@ -55,7 +55,7 @@ class _CommunityPostEditState extends State<CommunityPostEdit> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '${_titleController.text}',
+                  _titleController.text,
                   style: const TextStyle(fontSize: 20),
                 ),
               ),

@@ -48,8 +48,7 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
   Future<void> _pickImages() async {
     List<XFile>? selectedImages = await _picker.pickMultiImage();
 
-    if (selectedImages != null &&
-        (_images!.length + selectedImages.length) <= 5) {
+    if ((_images!.length + selectedImages.length) <= 5) {
       setState(() {
         _images!.addAll(selectedImages);
       });
@@ -80,7 +79,7 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
     return Scaffold(
       appBar: AppBar(title: const Text("포스팅 작성")),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: <Widget>[
                 const Padding(

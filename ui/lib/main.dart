@@ -99,17 +99,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('로그아웃'),
-                          content: Text('로그아웃 하시겠습니까?'),
+                          title: const Text('로그아웃'),
+                          content: const Text('로그아웃 하시겠습니까?'),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('취소'),
+                              child: const Text('취소'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
                             ),
                             TextButton(
-                              child: Text('확인'),
+                              child: const Text('확인'),
                               onPressed: () {
                                 FirebaseAuth.instance.signOut();
                                 Navigator.of(context).pop();
@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('카메라로 검색'),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CameraApp()));
+                    MaterialPageRoute(builder: (context) => const CameraApp()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),

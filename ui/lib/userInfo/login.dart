@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/main.dart';
 import 'package:has_app/userInfo/signup.dart';
@@ -12,14 +11,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _login() async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      /*UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _pwController.text,
-      );
+      );*/
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -40,9 +39,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } catch (e) {
-      print('Error : $e');
+      //print('Error : $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('로그인 중 알 수 없는 오류가 발생했습니다.'),
         ),
       );
@@ -75,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
               obscureText: true,
               // 비밀번호는 *로 표시하기 위함
             ),
-            Padding(padding: const EdgeInsets.only(top: 16.0)),
+            const Padding(padding: EdgeInsets.only(top: 16.0)),
             ElevatedButton(
               onPressed: _login,
               child: const Text('로그인'),

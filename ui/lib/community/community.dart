@@ -21,7 +21,6 @@ class CommunityBoard extends StatefulWidget {
 }
 
 class _CommunityBoardState extends State<CommunityBoard> {
-  final TextEditingController _controller = TextEditingController();
   final Query<Map<String, dynamic>> _posts = FirebaseFirestore.instance
       .collection('posts')
       .orderBy('createdAt', descending: true);
@@ -58,7 +57,7 @@ class _CommunityBoardState extends State<CommunityBoard> {
                                   CommunityPostDetail(post: post)));
                     },
                     child: Card(
-                      margin: EdgeInsets.all(8),
+                      margin: const EdgeInsets.all(8),
                       child: ListTile(
                         title: Text(post['title']),
                       ),
@@ -79,7 +78,7 @@ class _CommunityBoardState extends State<CommunityBoard> {
             child: Align(
               alignment: Alignment.bottomRight,
               child: Container(
-                margin: EdgeInsets.all(30),
+                margin: const EdgeInsets.all(30),
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
@@ -90,12 +89,12 @@ class _CommunityBoardState extends State<CommunityBoard> {
                       color: Colors.grey.withOpacity(1.0),
                       spreadRadius: 2,
                       blurRadius: 2,
-                      offset: Offset(-0.5, 0.5),
+                      offset: const Offset(-0.5, 0.5),
                     ),
                     // 그림자 효과
                   ],
                 ),
-                child: Icon(Icons.add),
+                child: const Icon(Icons.add),
               ),
             )),
       ],

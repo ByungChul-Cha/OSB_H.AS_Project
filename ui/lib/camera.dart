@@ -19,7 +19,6 @@ class _CameraAppState extends State<CameraApp> {
     _initCamera();
   }
 
-  @override
   Future<void> _initCamera() async {
     _cameras = await availableCameras();
     controller = CameraController(_cameras[0], ResolutionPreset.max);
