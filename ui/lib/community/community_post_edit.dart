@@ -52,26 +52,26 @@ class _CommunityPostEditState extends State<CommunityPostEdit> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(labelText: '제목'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '제목을 입력해주세요.';
-                  }
-                  return null;
-                },
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '${_titleController.text}',
+                  style: const TextStyle(fontSize: 20),
+                ),
               ),
-              TextFormField(
-                controller: _contentController,
-                decoration: const InputDecoration(labelText: '내용'),
-                maxLines: 10,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '내용을 입력해주세요.';
-                  }
-                  return null;
-                },
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: TextFormField(
+                  controller: _contentController,
+                  decoration: const InputDecoration(labelText: '내용'),
+                  maxLines: 10,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '내용을 입력해주세요.';
+                    }
+                    return null;
+                  },
+                ),
               ),
             ],
           ),

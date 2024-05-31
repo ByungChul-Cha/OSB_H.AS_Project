@@ -24,8 +24,28 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         MaterialPageRoute(builder: (context) => MyHomePage()),
       );
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = '해당 이메일로 등록된 계정이 없습니다.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = '잘못된 비밀번호입니다.';
+      } else {
+        errorMessage = '로그인 오류가 발생했습니다. 다시 시도해주세요.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+        ),
+      );
     } catch (e) {
       print('Error : $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('로그인 중 알 수 없는 오류가 발생했습니다.'),
+        ),
+      );
     }
   }
 
@@ -55,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
               obscureText: true,
               // 비밀번호는 *로 표시하기 위함
             ),
-            Padding(padding: EdgeInsets.only(top: 16.0)),
+            Padding(padding: const EdgeInsets.only(top: 16.0)),
             ElevatedButton(
               onPressed: _login,
               child: const Text('로그인'),
