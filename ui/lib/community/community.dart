@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/community/community_post.dart';
+import 'package:has_app/community/community_post_detail.dart';
 
 class Community extends StatelessWidget {
   @override
@@ -47,8 +48,20 @@ class _CommunityBoardState extends State<CommunityBoard> {
                 itemCount: posts.length,
                 itemBuilder: (context, index) {
                   final post = posts[index];
-                  return ListTile(
-                    title: Text(post['title']),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CommunityPostDetail(post: post)));
+                    },
+                    child: Card(
+                      margin: EdgeInsets.all(8),
+                      child: ListTile(
+                        title: Text(post['title']),
+                      ),
+                    ),
                   );
                 },
               );
@@ -84,35 +97,6 @@ class _CommunityBoardState extends State<CommunityBoard> {
                 child: Icon(Icons.add),
               ),
             )),
-        // 하단 추가 버튼
-        /*Padding(
-          padding: const EdgeInsets.all(8.0),
-          // 이전 글의 8.0만큼 떨어진 위치에 저장
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  decoration: const InputDecoration(
-                    hintText: 'Write a post...',
-                  ),
-                  // 하단 힌트 부분
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: () {
-                  if (_controller.text.isNotEmpty) {
-                    _posts.add({'content': _controller.text});
-                    _controller.clear();
-                  }
-                  // DB에 작성 및 하단 입력 부분 초기화
-                },
-              ),
-            ],
-          ),
-        ),
-        // 하단 입력 부분*/
       ],
     );
   }

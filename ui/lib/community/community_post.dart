@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/community/community.dart';
 import 'package:image_picker/image_picker.dart';
@@ -120,16 +121,22 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
           ),
           // 이미지 선택 기능(최대 5개)
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               String postKey = getRandomString(16);
+              final User? user = FirebaseAuth.instance.currentUser;
+              final uid = user?.uid ?? '';
+              final timestamp = DateTime.now();
               if (titleController.text.isNotEmpty &&
                   contentController.text.isNotEmpty) {
                 postTitle = titleController.text;
                 content = contentController.text;
-                _posts.doc(postKey).set({
+
+                await _posts.doc(postKey).set({
                   "key": postKey,
+                  "authorId": uid,
                   "title": postTitle,
                   "content": content,
+                  "timestamp": timestamp,
                 });
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Community()));
@@ -154,7 +161,7 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
                   },
                 );
               }
-              //토스트 메세지 출력
+              // Dialog 메세지 출력
             },
             child: const Text("업로드 하기"),
           ),
