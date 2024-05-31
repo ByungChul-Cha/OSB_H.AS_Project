@@ -92,9 +92,45 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: const BoxDecoration(
                 color: Colors.lightBlue,
               ),
+              otherAccountsPictures: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('로그아웃'),
+                          content: Text('로그아웃 하시겠습니까?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('취소'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text('확인'),
+                              onPressed: () {
+                                FirebaseAuth.instance.signOut();
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginScreen()));
+                              },
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.lightBlue,
+                    child: Icon(Icons.exit_to_app, color: Colors.white),
+                  ),
+                ),
+              ],
             ),
             //유저 정보 그려주는 코드
-
             ListTile(
               leading: const Icon(Icons.search),
               iconColor: Colors.black,
