@@ -55,6 +55,22 @@ class CommunityPostDetail extends StatelessWidget {
                 post['title'],
                 style: Theme.of(context).textTheme.titleLarge,
               ),
+              RichText(
+                text: TextSpan(
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: const Color.fromARGB(255, 61, 61, 61)),
+                  children: <TextSpan>[
+                    TextSpan(text: post['name'] + "  "),
+                    TextSpan(
+                      text: post['content'],
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: const Color.fromARGB(255, 61, 61, 61)),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 8.0),
               Text(
                 post['content'],

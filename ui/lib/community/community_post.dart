@@ -33,6 +33,18 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
   // 키 생성을 위해서 _chars 변수에서 랜덤으로 뽑아서 문자열 변환
 
+  Future<String> _fetchUserName(String uid) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentReference userRef = firestore.collection('users').doc(uid);
+
+    DocumentSnapshot userDoc = await userRef.get();
+    if (userDoc.exists) {
+      return userDoc['name'];
+    } else {
+      return '익명';
+    }
+  }
+
   Future<void> _pickImages() async {
     List<XFile>? selectedImages = await _picker.pickMultiImage();
 
@@ -140,6 +152,8 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
                       postTitle = titleController.text;
                       content = contentController.text;
 
+                      String userName = await _fetchUserName(uid);
+
                       List<String> imageUrls = [];
 
                       for (var imageFile in _images!) {
@@ -162,6 +176,7 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
                         "content": content,
                         "createdAt": timestamp,
                         "imageUrls": imageUrls,
+                        "name": userName,
                       });
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => Community()));
