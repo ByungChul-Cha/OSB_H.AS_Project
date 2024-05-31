@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/community/community.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class CommunityPostBoard extends StatefulWidget {
   @override
@@ -58,6 +59,7 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
       );
     }
   }
+  // 이미지 선택 함수
 
   @override
   Widget build(BuildContext context) {
@@ -131,12 +133,26 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
                 postTitle = titleController.text;
                 content = contentController.text;
 
+                List<String> imageUrls = [];
+
+                for (var imageFile in _images!) {
+                  String fileName = '$postKey.jpg';
+                  firebase_storage.Reference ref = firebase_storage
+                      .FirebaseStorage.instance
+                      .ref()
+                      .child('postImages/$fileName');
+
+                  await ref.putFile(File(imageFile.path));
+                  String downloadUrl = await ref.getDownloadURL();
+                  imageUrls.add(downloadUrl);
+                }
                 await _posts.doc(postKey).set({
                   "key": postKey,
                   "authorId": uid,
                   "title": postTitle,
                   "content": content,
                   "createdAt": timestamp,
+                  "imageUrls": imageUrls,
                 });
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Community()));
