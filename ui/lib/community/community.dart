@@ -22,8 +22,9 @@ class CommunityBoard extends StatefulWidget {
 
 class _CommunityBoardState extends State<CommunityBoard> {
   final TextEditingController _controller = TextEditingController();
-  final CollectionReference _posts =
-      FirebaseFirestore.instance.collection('posts');
+  final Query<Map<String, dynamic>> _posts = FirebaseFirestore.instance
+      .collection('posts')
+      .orderBy('createdAt', descending: true);
   // 이전에 작성한 글 불러옴
 
   @override

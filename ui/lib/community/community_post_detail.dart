@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:has_app/community/community_post_edit.dart';
 
 class CommunityPostDetail extends StatelessWidget {
   final DocumentSnapshot post;
@@ -20,7 +21,11 @@ class CommunityPostDetail extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.edit),
               onPressed: () {
-                // 수정 기능
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CommunityPostEdit(post: post)),
+                );
               },
             ),
           if (isAuthor)

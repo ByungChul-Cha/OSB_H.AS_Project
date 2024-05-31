@@ -136,7 +136,7 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
                   "authorId": uid,
                   "title": postTitle,
                   "content": content,
-                  "timestamp": timestamp,
+                  "createdAt": timestamp,
                 });
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Community()));
