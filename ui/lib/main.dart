@@ -1,12 +1,18 @@
-import "package:flutter/material.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'camera.dart';
-import 'community.dart';
+import 'community/community.dart';
 import 'search.dart';
-import 'settings.dart';
 // 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
+import "package:flutter/material.dart";
+import 'package:has_app/userInfo/login.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
@@ -16,12 +22,44 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'H.AS App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
+      home: LoginScreen(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  String userName = '사용자';
+  String userEmail = '이메일';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  void fetchUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        setState(() {
+          userName = userData['name'] ?? '이름 없음';
+          userEmail = userData['email'] ?? '이메일 없음';
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,23 +78,64 @@ class MyHomePage extends StatelessWidget {
       drawer: Drawer(
         child: ListView(
           children: [
-            const UserAccountsDrawerHeader(
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/image/images.jpg'),
+            UserAccountsDrawerHeader(
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.account_circle,
+                  size: 70.0,
+                  color: Colors.grey,
+                ),
               ),
-              accountName: Text("테스트용"),
-              accountEmail: Text('test@test.com'),
-              decoration: BoxDecoration(
+              accountName: Text(userName),
+              accountEmail: Text(userEmail),
+              decoration: const BoxDecoration(
                 color: Colors.lightBlue,
               ),
+              otherAccountsPictures: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('로그아웃'),
+                          content: const Text('로그아웃 하시겠습니까?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('취소'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('확인'),
+                              onPressed: () {
+                                FirebaseAuth.instance.signOut();
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginScreen()));
+                              },
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.lightBlue,
+                    child: Icon(Icons.exit_to_app, color: Colors.white),
+                  ),
+                ),
+              ],
             ),
             //유저 정보 그려주는 코드
-
             ListTile(
               leading: const Icon(Icons.search),
               iconColor: Colors.black,
               focusColor: Colors.black,
-              title: const Text('식별 검색'),
+              title: const Text('이름으로 검색'),
               onTap: () {
                 Navigator.push(
                     context, MaterialPageRoute(builder: (context) => Search()));
@@ -71,8 +150,8 @@ class MyHomePage extends StatelessWidget {
               focusColor: Colors.black,
               title: const Text('카메라로 검색'),
               onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Camera()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const CameraApp()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),
@@ -90,19 +169,6 @@ class MyHomePage extends StatelessWidget {
               trailing: const Icon(Icons.navigate_next),
             ),
             //메뉴에  커뮤니티 창을 만듦
-
-            ListTile(
-              leading: const Icon(Icons.settings),
-              iconColor: Colors.black,
-              focusColor: Colors.black,
-              title: const Text('환경설정'),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Settings()));
-              },
-              trailing: const Icon(Icons.navigate_next),
-            ),
-            //메뉴에 환경설정 창을 만듦
           ],
         ),
       ),
