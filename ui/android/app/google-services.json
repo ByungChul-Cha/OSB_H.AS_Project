@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "85019325480",
+    "project_id": "osb-project-9307e",
+    "storage_bucket": "osb-project-9307e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85019325480:android:efff657f40e07b598c311d",
+        "android_client_info": {
+          "package_name": "H.AS"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6B0otYW1I0bvhFtX4L1kzw-K_JqYRR6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85019325480:android:d8cc8f5a85a9c6988c311d",
+        "android_client_info": {
+          "package_name": "com.example.has_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6B0otYW1I0bvhFtX4L1kzw-K_JqYRR6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

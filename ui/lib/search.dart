@@ -5,7 +5,7 @@ class Search extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-      title: const Text('식별 검색'),
+      title: const Text('이름으로 검색'),
     ));
   }
 }
