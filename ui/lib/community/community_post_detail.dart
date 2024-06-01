@@ -2,21 +2,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/community/community_post_edit.dart';
+import 'package:intl/intl.dart';
 
-class CommunityPostDetail extends StatelessWidget {
+class CommunityPostDetail extends StatefulWidget {
   final DocumentSnapshot post;
 
   CommunityPostDetail({required this.post});
 
   @override
+  _CommunityPostDetailState createState() => _CommunityPostDetailState();
+}
+
+class _CommunityPostDetailState extends State<CommunityPostDetail> {
+  int currentPage = 0; // 현재 페이지 인덱스
+
+  @override
   Widget build(BuildContext context) {
+    List<dynamic> imageUrls = widget.post['imageUrls'] ?? [];
+    DateTime postDate = (widget.post['createdAt'] as Timestamp).toDate();
+    DateTime koTime = postDate.add(const Duration(hours: 9));
+    String formattedDate = DateFormat('MM/dd HH:mm').format(koTime);
     String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    bool isAuthor = post['authorId'] == currentUserId;
-    List<dynamic> imageUrls = post['imageUrls'] ?? [];
+    bool isAuthor = widget.post['authorId'] == currentUserId;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(post['title']),
+        title: Text(widget.post['title']),
         actions: <Widget>[
           if (isAuthor)
             IconButton(
@@ -25,7 +36,8 @@ class CommunityPostDetail extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => CommunityPostEdit(post: post)),
+                      builder: (context) =>
+                          CommunityPostEdit(post: widget.post)),
                 );
               },
             ),
@@ -33,10 +45,9 @@ class CommunityPostDetail extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                // 삭제 기능
                 FirebaseFirestore.instance
                     .collection('posts')
-                    .doc(post.id)
+                    .doc(widget.post.id)
                     .delete()
                     .then((_) {
                   Navigator.pop(context);
@@ -52,7 +63,7 @@ class CommunityPostDetail extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                post['title'],
+                widget.post['title'],
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               RichText(
@@ -62,9 +73,9 @@ class CommunityPostDetail extends StatelessWidget {
                       .bodySmall
                       ?.copyWith(color: const Color.fromARGB(255, 61, 61, 61)),
                   children: <TextSpan>[
-                    TextSpan(text: post['name'] + "  "),
+                    TextSpan(text: widget.post['name'] + "  "),
                     TextSpan(
-                      text: post['content'],
+                      text: formattedDate,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: const Color.fromARGB(255, 61, 61, 61)),
                     ),
@@ -73,19 +84,45 @@ class CommunityPostDetail extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               Text(
-                post['content'],
+                widget.post['content'],
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 16.0),
-              for (var imageUrl in imageUrls)
-                if (imageUrl != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
+              if (imageUrls.isNotEmpty)
+                Stack(
+                  children: <Widget>[
+                    Container(
+                      height: 400,
+                      child: PageView.builder(
+                        itemCount: imageUrls.length,
+                        onPageChanged: (int index) {
+                          setState(() {
+                            currentPage = index;
+                          });
+                        },
+                        itemBuilder: (context, index) {
+                          return Image.network(
+                            imageUrls[index],
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      right: 10,
+                      bottom: 10,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        color: Colors.black54,
+                        child: Text(
+                          "${currentPage + 1}/${imageUrls.length}",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),

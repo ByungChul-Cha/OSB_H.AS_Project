@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'H.AS App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
+      home: LoginScreen(),
     );
   }
 }
