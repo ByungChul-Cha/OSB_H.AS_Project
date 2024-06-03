@@ -1,107 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
-/*class CameraApp extends StatefulWidget {
-  @override
-  State<CameraApp> createState() => _CameraAppState();
-}
-
-class _CameraAppState extends State<CameraApp> {
-  XFile? _image;
-  final ImagePicker picker = ImagePicker();
-  String scannedText = "";
-
-  Future getImage(ImageSource imageSource) async {
-    final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    if (pickedFile != null) {
-      setState(() {
-        _image = XFile(pickedFile.path);
-      });
-      getRecognizedText(_image!);
-    }
-  }
-
-  void getRecognizedText(XFile image) async {
-    final InputImage inputImage = InputImage.fromFilePath(image.path);
-
-    final textRecognizer =
-        GoogleMlKit.vision.textRecognizer(script: TextRecognitionScript.latin);
-
-    RecognizedText recognizedText =
-        await textRecognizer.processImage(inputImage);
-
-    await textRecognizer.close();
-
-    scannedText = "";
-    for (TextBlock block in recognizedText.blocks) {
-      for (TextLine line in block.lines) {
-        scannedText = scannedText + line.text + "\n";
-      }
-    }
-
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text("Camera Test")),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 30, width: double.infinity),
-            _buildPhotoArea(),
-            _buildRecognizedText(),
-            SizedBox(height: 20),
-            _buildButton(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPhotoArea() {
-    return _image != null
-        ? Container(
-            width: 300,
-            height: 300,
-            child: Image.file(File(_image!.path)),
-          )
-        : Container(
-            width: 300,
-            height: 300,
-            color: Colors.grey,
-          );
-  }
-
-  Widget _buildRecognizedText() {
-    return Text(scannedText);
-  }
-
-  Widget _buildButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            getImage(ImageSource.camera);
-          },
-          child: Text("카메라"),
-        ),
-        SizedBox(width: 30),
-        ElevatedButton(
-          onPressed: () {
-            getImage(ImageSource.gallery);
-          },
-          child: Text("갤러리"),
-        ),
-      ],
-    );
-  }
-}*/
+import 'package:google_ml_kit/google_ml_kit.dart';
 
 class CameraApp extends StatefulWidget {
   @override
@@ -112,48 +12,110 @@ class _CameraAppState extends State<CameraApp> {
   XFile? _imageFront;
   XFile? _imageBack;
   final ImagePicker _picker = ImagePicker();
+  String _extractedText = '';
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(bool isFront) async {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      if (_imageFront == null) {
-        setState(() {
+      setState(() {
+        if (isFront) {
           _imageFront = pickedImage;
-        });
-      } else if (_imageBack == null) {
-        setState(() {
-          _imageBack == pickedImage;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('이미 두 이미지가 선택되었습니다.'),
-          ),
-        );
-      }
+        } else {
+          _imageBack = pickedImage;
+        }
+      });
     }
+  }
+
+  Future<void> _extractTextFromImages() async {
+    if (_imageFront != null && _imageBack != null) {
+      final inputImageFront = InputImage.fromFilePath(_imageFront!.path);
+      final inputImageBack = InputImage.fromFilePath(_imageBack!.path);
+      final textDetector = GoogleMlKit.vision.textRecognizer();
+
+      final RecognizedText recognisedTextFront =
+          await textDetector.processImage(inputImageFront);
+      final RecognizedText recognisedTextBack =
+          await textDetector.processImage(inputImageBack);
+
+      setState(() {
+        _extractedText = 'Front Image Text:\n${recognisedTextFront.text}\n\n' +
+            'Back Image Text:\n${recognisedTextBack.text}';
+      });
+
+      await textDetector.close();
+    }
+  }
+
+  Widget _buildImageBox(bool isFront) {
+    return GestureDetector(
+      onTap: () => _pickImage(isFront),
+      child: Container(
+        width: 150,
+        height: 150,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.blue),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: isFront
+            ? (_imageFront != null
+                ? Image.file(File(_imageFront!.path), fit: BoxFit.cover)
+                : Center(child: Text('앞쪽 이미지를 선택하세요.')))
+            : (_imageBack != null
+                ? Image.file(File(_imageBack!.path), fit: BoxFit.cover)
+                : Center(child: Text('뒤쪽 이미지를 선택하세요.'))),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('이미지 선택'),
+        title: Text('카메라 검색'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _imageFront != null
-                ? Image.file(File(_imageFront!.path))
-                : Text('앞쪽 이미지를 선택하세요.'),
-            _imageBack != null
-                ? Image.file(File(_imageBack!.path))
-                : Text('뒤쪽 이미지를 선택하세요.'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildImageBox(true),
+                _buildImageBox(false),
+              ],
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('이미지 선택'),
+              onPressed: () async {
+                if (_imageFront == null || _imageBack == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('두 이미지를 모두 선택해 주세요.'),
+                    ),
+                  );
+                } else {
+                  await _extractTextFromImages();
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('추출된 이미지'),
+                      content: SingleChildScrollView(
+                        child: Text(_extractedText),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('확인'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              child: Text('이미지 추출하기'),
             ),
           ],
         ),
