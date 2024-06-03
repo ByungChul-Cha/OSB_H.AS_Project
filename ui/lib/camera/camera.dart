@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class CameraApp extends StatefulWidget {
   @override
@@ -15,6 +15,9 @@ class _CameraAppState extends State<CameraApp> {
   String _extractedText = '';
 
   Future<void> _pickImage(bool isFront) async {
+    final source = await _showImageSourceDialog();
+    if (source == null) return;
+
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
@@ -27,11 +30,31 @@ class _CameraAppState extends State<CameraApp> {
     }
   }
 
+  Future<ImageSource?> _showImageSourceDialog() async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('이미지 선택'),
+        content: Text('이미지를 가져올 위치를 선택하세요.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, ImageSource.gallery),
+            child: Text('갤러리'),
+          ),
+          TextButton(
+            child: Text('카메라'),
+            onPressed: () => Navigator.pop(context, ImageSource.camera),
+          )
+        ],
+      ),
+    );
+  }
+
   Future<void> _extractTextFromImages() async {
     if (_imageFront != null && _imageBack != null) {
       final inputImageFront = InputImage.fromFilePath(_imageFront!.path);
       final inputImageBack = InputImage.fromFilePath(_imageBack!.path);
-      final textDetector = GoogleMlKit.vision.textRecognizer();
+      final TextRecognizer textDetector = TextRecognizer();
 
       final RecognizedText recognisedTextFront =
           await textDetector.processImage(inputImageFront);
