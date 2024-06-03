@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('카메라로 검색'),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const CameraApp()));
+                    MaterialPageRoute(builder: (context) => CameraApp()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),

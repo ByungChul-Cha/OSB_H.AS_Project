@@ -1,57 +1,104 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CameraApp extends StatefulWidget {
-  const CameraApp({super.key});
-
   @override
   State<CameraApp> createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
-  CameraController? controller;
-  late List<CameraDescription> _cameras;
-  bool _isControllerInitialized = false;
+  XFile? _image;
+  final ImagePicker picker = ImagePicker();
+  String scannedText = "";
 
-  @override
-  void initState() {
-    super.initState();
-    _initCamera();
+  Future getImage(ImageSource imageSource) async {
+    final XFile? pickedFile = await picker.pickImage(source: imageSource);
+    if (pickedFile != null) {
+      setState(() {
+        _image = XFile(pickedFile.path);
+      });
+      getRecognizedText(_image!);
+    }
   }
 
-  Future<void> _initCamera() async {
-    _cameras = await availableCameras();
-    controller = CameraController(_cameras[0], ResolutionPreset.max);
-    await controller!.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    }).catchError((Object e) {
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            break;
-          default:
-            break;
-        }
-      }
-    });
-  }
+  void getRecognizedText(XFile image) async {
+    final InputImage inputImage = InputImage.fromFilePath(image.path);
 
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
+    final textRecognizer =
+        GoogleMlKit.vision.textRecognizer(script: TextRecognitionScript.latin);
+
+    RecognizedText recognizedText =
+        await textRecognizer.processImage(inputImage);
+
+    await textRecognizer.close();
+
+    scannedText = "";
+    for (TextBlock block in recognizedText.blocks) {
+      for (TextLine line in block.lines) {
+        scannedText = scannedText + line.text + "\n";
+      }
+    }
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isControllerInitialized) {
-      return Container();
-    }
     return MaterialApp(
-      home: CameraPreview(controller!),
+      home: Scaffold(
+        appBar: AppBar(title: Text("Camera Test")),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 30, width: double.infinity),
+            _buildPhotoArea(),
+            _buildRecognizedText(),
+            SizedBox(height: 20),
+            _buildButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoArea() {
+    return _image != null
+        ? Container(
+            width: 300,
+            height: 300,
+            child: Image.file(File(_image!.path)),
+          )
+        : Container(
+            width: 300,
+            height: 300,
+            color: Colors.grey,
+          );
+  }
+
+  Widget _buildRecognizedText() {
+    return Text(scannedText);
+  }
+
+  Widget _buildButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            getImage(ImageSource.camera);
+          },
+          child: Text("카메라"),
+        ),
+        SizedBox(width: 30),
+        ElevatedButton(
+          onPressed: () {
+            getImage(ImageSource.gallery);
+          },
+          child: Text("갤러리"),
+        ),
+      ],
     );
   }
 }
