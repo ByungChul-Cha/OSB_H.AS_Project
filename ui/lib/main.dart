@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'camera.dart';
+import 'camera/camera.dart';
 import 'community/community.dart';
 import 'search.dart';
 // 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'H.AS App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginScreen(),
+      home: MyHomePage(),
     );
   }
 }

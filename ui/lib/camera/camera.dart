@@ -3,7 +3,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class CameraApp extends StatefulWidget {
+/*class CameraApp extends StatefulWidget {
   @override
   State<CameraApp> createState() => _CameraAppState();
 }
@@ -99,6 +99,65 @@ class _CameraAppState extends State<CameraApp> {
           child: Text("갤러리"),
         ),
       ],
+    );
+  }
+}*/
+
+class CameraApp extends StatefulWidget {
+  @override
+  _CameraAppState createState() => _CameraAppState();
+}
+
+class _CameraAppState extends State<CameraApp> {
+  XFile? _imageFront;
+  XFile? _imageBack;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      if (_imageFront == null) {
+        setState(() {
+          _imageFront = pickedImage;
+        });
+      } else if (_imageBack == null) {
+        setState(() {
+          _imageBack == pickedImage;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('이미 두 이미지가 선택되었습니다.'),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('이미지 선택'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _imageFront != null
+                ? Image.file(File(_imageFront!.path))
+                : Text('앞쪽 이미지를 선택하세요.'),
+            _imageBack != null
+                ? Image.file(File(_imageBack!.path))
+                : Text('뒤쪽 이미지를 선택하세요.'),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('이미지 선택'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
