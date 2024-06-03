@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'camera/camera.dart';
+import 'camera/image_text_source.dart';
 import 'community/community.dart';
 import 'search.dart';
 // 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
@@ -151,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('카메라로 검색'),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CameraApp()));
+                    MaterialPageRoute(builder: (context) => ImageTextSource()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),
