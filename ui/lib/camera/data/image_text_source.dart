@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:has_app/camera/data/savedata.dart';
+import 'package:has_app/result/result_screen.dart';
 //import 'package:has_app/result/result_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -110,9 +111,12 @@ class _ImageTextSourceState extends State<ImageTextSource> {
 
     if (response.statusCode == 200) {
       print('Data sent successfully');
-      saveDataToFirebaseStorage(response
-          .body); // Firebase Storage original_pilldata에 data.json 형태로 저장
-      //navigateToResultScreen(response.body);
+      saveDataToFirebaseStorage(response.body);
+      // Firebase Storage original_pilldata에 data.json 형태로 저장
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ResultScreen()),
+      );
     } else {
       print('Failed to send data');
     }
