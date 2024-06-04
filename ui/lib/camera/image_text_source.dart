@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-import 'camera.dart';
+//import 'camera.dart';
 import 'permission.dart';
 
 class ImageTextSource extends StatefulWidget {
@@ -16,7 +17,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
   XFile? _imageFront;
   XFile? _imageBack;
   final ImagePicker _picker = ImagePicker();
-  String _extractedText = '';
+  //String _extractedText = '';
 
   Future<void> _pickImage(bool isFront) async {
     final source = await _showImageSourceDialog();
@@ -38,15 +39,15 @@ class _ImageTextSourceState extends State<ImageTextSource> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('이미지 선택'),
-        content: Text('이미지를 가져올 위치를 선택하세요.'),
+        title: const Text('이미지 선택'),
+        content: const Text('이미지를 가져올 위치를 선택하세요.'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            child: Text('갤러리'),
+            child: const Text('갤러리'),
           ),
           TextButton(
-            child: Text('카메라'),
+            child: const Text('카메라'),
             onPressed: () => Navigator.pop(context, ImageSource.camera),
           )
         ],
@@ -65,10 +66,15 @@ class _ImageTextSourceState extends State<ImageTextSource> {
       final RecognizedText recognisedTextBack =
           await textDetector.processImage(inputImageBack);
 
-      setState(() {
-        _extractedText = 'Front Image Text:\n${recognisedTextFront.text}\n\n' +
-            'Back Image Text:\n${recognisedTextBack.text}';
-      });
+      /*setState(() {
+      _extractedText = 'Front Image Text:\n${recognisedTextFront.text}\n\n' +
+          'Back Image Text:\n${recognisedTextBack.text}';
+    });*/
+
+      sendDataToServer([
+        recognisedTextFront.text,
+        recognisedTextBack.text,
+      ]);
 
       await textDetector.close();
     }
@@ -87,17 +93,37 @@ class _ImageTextSourceState extends State<ImageTextSource> {
         child: isFront
             ? (_imageFront != null
                 ? Image.file(File(_imageFront!.path), fit: BoxFit.cover)
-                : Center(child: Text('앞쪽 이미지를 선택하세요.')))
+                : const Center(child: Text('앞쪽 이미지를 선택하세요.')))
             : (_imageBack != null
                 ? Image.file(File(_imageBack!.path), fit: BoxFit.cover)
-                : Center(child: Text('뒤쪽 이미지를 선택하세요.'))),
+                : const Center(child: Text('뒤쪽 이미지를 선택하세요.'))),
       ),
     );
   }
 
+  void sendDataToServer(List<String> searchTerms) async {
+    const url = 'http://10.0.2.2:5000/search';
+    final response = await http.post(
+      Uri.parse(url), // 서버 URL 및 엔드포인트를 입력, 안드로이드 에뮬레이터 통신 "10.0.2.2"
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'terms': searchTerms,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Data sent successfully');
+      print('Response: ${response.body}');
+    } else {
+      print('Failed to send data');
+      print(response.statusCode);
+    }
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     requestCameraPermission();
     requestPhotosPermission();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
@@ -109,7 +135,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('카메라 검색'),
+        title: const Text('카메라 검색'),
       ),
       body: Center(
         child: Column(
@@ -122,37 +148,20 @@ class _ImageTextSourceState extends State<ImageTextSource> {
                 _buildImageBox(false),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 if (_imageFront == null || _imageBack == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('두 이미지를 모두 선택해 주세요.'),
                     ),
                   );
                 } else {
                   await _extractTextFromImages();
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('추출된 이미지'),
-                      content: SingleChildScrollView(
-                        child: Text(_extractedText),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('확인'),
-                        ),
-                      ],
-                    ),
-                  );
                 }
               },
-              child: Text('이미지 추출하기'),
+              child: const Text('이미지 추출하기'),
             ),
           ],
         ),

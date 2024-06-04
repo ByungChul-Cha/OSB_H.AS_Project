@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'camera/camera.dart';
 import 'camera/image_text_source.dart';
 import 'community/community.dart';
 import 'search.dart';
