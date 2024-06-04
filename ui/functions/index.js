@@ -50,5 +50,9 @@ exports.splitAndOrganizeJsonFile = functions.storage
 
     // 원본 임시 파일 삭제
     fs.unlinkSync(tempFilePath);
+
+    // Firebase Storage에서 original_pilldata/data.json 파일 삭제
+    await bucket.file(filePath).delete();
+    console.log("Deleted original file: ${filePath}");
     return null;
   });
