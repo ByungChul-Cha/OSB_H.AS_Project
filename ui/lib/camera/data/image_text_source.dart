@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:has_app/camera/data/savedata.dart';
+//import 'package:has_app/result/result_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-//import 'camera.dart';
-import 'permission.dart';
+import '../permission.dart';
 
 class ImageTextSource extends StatefulWidget {
   @override
@@ -116,11 +117,22 @@ class _ImageTextSourceState extends State<ImageTextSource> {
     if (response.statusCode == 200) {
       print('Data sent successfully');
       print('Response: ${response.body}');
+      saveDataToFirebaseStorage(response.body);
+      //navigateToResultScreen(response.body);
     } else {
       print('Failed to send data');
       print(response.statusCode);
     }
   }
+
+  /*void navigateToResultScreen(String responseBody) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultScreen(data: responseBody),
+      ),
+    );
+  }*/
 
   @override
   void initState() {

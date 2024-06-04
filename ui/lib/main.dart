@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'camera/image_text_source.dart';
+import 'camera/data/image_text_source.dart';
 import 'community/community.dart';
 import 'search.dart';
 // 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
