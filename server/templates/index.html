@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Search Results</title>
     <script>
-        async function fetchData() {
-            const response = await fetch('/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ terms: ['term1', 'term2'] }) // 예시 데이터
-            });
-            const data = await response.json();
-            displayData(data);
-        }
+      async function fetchData() {
+        const response = await fetch("/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ terms: ["term1", "term2"] }), // 예시 데이터
+        });
+        const data = await response.json();
+        displayData(data);
+      }
 
-        function displayData(data) {
-            const frontList = document.getElementById('print_front_list');
-            const backList = document.getElementById('print_back_list');
-            const rowList = document.getElementById('row_data_list');
-            
-            frontList.innerHTML = data.print_front_list.join(', ');
-            backList.innerHTML = data.print_back_list.join(', ');
-            rowList.innerHTML = JSON.stringify(data.row_data_list, null, 2);
-        }
+      function displayData(data) {
+        const frontList = document.getElementById("print_front_list");
+        const backList = document.getElementById("print_back_list");
+        const rowList = document.getElementById("row_data_list");
 
-        window.onload = fetchData;
+        frontList.innerHTML = data.print_front_list.join(", ");
+        backList.innerHTML = data.print_back_list.join(", ");
+        rowList.innerHTML = JSON.stringify(data.row_data_list, null, 2);
+      }
+
+      window.onload = fetchData;
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Search Results</h1>
     <h2>Print Front List</h2>
     <p id="print_front_list"></p>
@@ -38,5 +39,5 @@
     <p id="print_back_list"></p>
     <h2>Row Data List</h2>
     <pre id="row_data_list"></pre>
-</body>
+  </body>
 </html>

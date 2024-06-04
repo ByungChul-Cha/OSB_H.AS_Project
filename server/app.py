@@ -6,11 +6,11 @@ app = Flask(__name__)
 # CSV 파일 경로
 file_path = 'data/pill_kr.csv'
 
-@app.route('/')
+@app.route("/")
 def index():
     return render_template('index.html')
 
-@app.route('/search', methods=['POST'])
+@app.route("/search", methods=['POST'])
 def search():
    data = request.get_json()
    search_terms = data.get('terms', [])
@@ -34,4 +34,4 @@ def search():
       'row_data_list': row_data_list
    })
 if __name__ == '__main__':
-   app.run(host='0.0.0.0', port=5000, debug=True)
+   app.run(host='0.0.0.0', port=5000, debug=False)
