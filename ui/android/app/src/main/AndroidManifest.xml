@@ -5,7 +5,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="true"/>
 
     <application
-        android:label="has_app"
+        android:label="Pill Search"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

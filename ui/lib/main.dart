@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'H.AS App',
+      title: 'Pill Search',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: MyHomePage(),
     );
