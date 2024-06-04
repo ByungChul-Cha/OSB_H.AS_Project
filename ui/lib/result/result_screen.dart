@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 
 class ResultScreen extends StatefulWidget {
   @override
@@ -10,6 +9,8 @@ class ResultScreen extends StatefulWidget {
 class _ResultScreenState extends State<ResultScreen> {
   List<String> folderNames = [];
   List<String> imageUrls = [];
+  int _currentPage = 0;
+  PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -59,11 +60,55 @@ class _ResultScreenState extends State<ResultScreen> {
       ),
       body: imageUrls.isEmpty
           ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: imageUrls.length,
-              itemBuilder: (context, index) {
-                return Image.network(imageUrls[index]);
-              },
+          : Stack(
+              children: [
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: imageUrls.length,
+                  onPageChanged: (int page) {
+                    setState(() {
+                      _currentPage = page;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return Center(
+                      child: Container(
+                        margin: EdgeInsets.all(16.0), // 박스 주변의 여백을 설정합니다.
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Colors.grey), // 박스 테두리 색상과 두께를 설정합니다.
+                          borderRadius:
+                              BorderRadius.circular(8.0), // 박스의 모서리를 둥글게 설정합니다.
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              8.0), // 이미지의 모서리를 둥글게 설정합니다.
+                          child: Image.network(
+                            imageUrls[index],
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                Positioned(
+                  bottom: 16.0,
+                  right: 16.0,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    color: Colors.black54,
+                    child: Text(
+                      '${_currentPage + 1}/${imageUrls.length}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }
