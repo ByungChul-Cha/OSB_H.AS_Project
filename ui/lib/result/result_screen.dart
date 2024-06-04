@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'convert_object.dart';
-import 'drug_info.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class ResultScreen extends StatefulWidget {
   @override
@@ -9,50 +8,63 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
-  late Future<List<DrugInfo>> futureDrugInfoList;
+  List<String> folderNames = [];
+  List<String> imageUrls = [];
 
   @override
   void initState() {
     super.initState();
-    futureDrugInfoList = fetchDrugInfoList();
+    fetchFolderNames();
   }
 
-  Future<List<DrugInfo>> fetchDrugInfoList() async {
-    final response =
-        await DefaultAssetBundle.of(context).loadString('assets/data.json');
-    return parseDrugInfo(response);
+  Future<void> fetchFolderNames() async {
+    final storageRef = FirebaseStorage.instance.ref().child('split_pilldata');
+    final ListResult result = await storageRef.listAll();
+
+    setState(() {
+      folderNames = result.prefixes.map((ref) => ref.name).toList();
+    });
+
+    fetchImageUrls();
+  }
+
+  Future<void> fetchImageUrls() async {
+    final storageRef = FirebaseStorage.instance.ref().child('split_pilldata');
+    final ListResult result = await storageRef.listAll();
+    List<String> urls = [];
+
+    for (Reference folderRef in result.prefixes) {
+      final String folderName = folderRef.name;
+      final imageRef =
+          FirebaseStorage.instance.ref().child('Image/Src/Raw/$folderName.jpg');
+
+      try {
+        final String imageUrl = await imageRef.getDownloadURL();
+        urls.add(imageUrl);
+      } catch (e) {
+        print("Error fetching image for $folderName: $e");
+      }
+    }
+
+    setState(() {
+      imageUrls = urls;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('결과 화면'),
+        title: Text('검색된 알약들'),
       ),
-      body: FutureBuilder<List<DrugInfo>>(
-        future: futureDrugInfoList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data found'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
+      body: imageUrls.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: imageUrls.length,
               itemBuilder: (context, index) {
-                final drugInfo = snapshot.data![index];
-                return ListTile(
-                  leading: Image.network(drugInfo.itemImage),
-                  title: Text(drugInfo.itemName),
-                  subtitle: Text(drugInfo.className),
-                );
+                return Image.network(imageUrls[index]);
               },
-            );
-          }
-        },
-      ),
+            ),
     );
   }
 }

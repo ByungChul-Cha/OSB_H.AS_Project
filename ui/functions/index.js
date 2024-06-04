@@ -30,23 +30,28 @@ exports.splitAndOrganizeJsonFile = functions.storage
     // 각 항목을 ITEM_SEQ 폴더에 저장
     for (const rowData of rowDataList) {
       const itemSeq = rowData["ITEM_SEQ"]; // ITEM_SEQ 변수값 추출
-      const timestamp = Date.now();
-      const folderName = `split_pilldata/${timestamp}/${itemSeq}`; // 폴더명 설정
-      const exists = await bucket.getFiles({ prefix: folderName });
+      const folderName = `split_pilldata/${itemSeq}`; // 폴더명 설정
 
-      // 해당 폴더(랜덤숫자/ITEM_SEQ)가 존재하지 않을 때만 파일 생성 및 업로드
-      if (!exists[0].length) {
-        const newFileName = `${folderName}/data.json`;
-        const newFilePath = path.join(os.tmpdir(), `data_${itemSeq}.json`);
-        fs.writeFileSync(newFilePath, JSON.stringify(rowData, null, 2), "utf8");
-        await bucket.upload(newFilePath, {
-          destination: newFileName,
-        });
-        console.log(`Uploaded data to ${newFileName}`);
-        fs.unlinkSync(newFilePath); // 임시 파일 삭제
-      } else {
-        console.log(`${folderName} already exists. Skipping.`);
+      // 폴더가 이미 존재하는지 확인
+      const [files] = await bucket.getFiles({ prefix: folderName });
+
+      // 폴더가 존재하면 폴더 내 모든 파일 삭제
+      if (files.length > 0) {
+        for (const file of files) {
+          await file.delete();
+        }
+        console.log(`Deleted all files in ${folderName}`);
       }
+
+      // 해당 폴더(ITEM_SEQ)가 존재하지 않을 때만 파일 생성 및 업로드
+      const newFileName = `${folderName}/data.json`;
+      const newFilePath = path.join(os.tmpdir(), `data_${itemSeq}.json`);
+      fs.writeFileSync(newFilePath, JSON.stringify(rowData, null, 2), "utf8");
+      await bucket.upload(newFilePath, {
+        destination: newFileName,
+      });
+      console.log(`Uploaded data to ${newFileName}`);
+      fs.unlinkSync(newFilePath); // 임시 파일 삭제
     }
 
     // 원본 임시 파일 삭제
