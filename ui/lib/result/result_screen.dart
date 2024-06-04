@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 
 class ResultScreen extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class _ResultScreenState extends State<ResultScreen> {
   List<String> folderNames = [];
   List<String> imageUrls = [];
   int _currentPage = 0;
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -56,10 +56,10 @@ class _ResultScreenState extends State<ResultScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('검색된 알약들'),
+        title: const Text('검색된 알약'),
       ),
       body: imageUrls.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Stack(
               children: [
                 PageView.builder(
@@ -71,40 +71,68 @@ class _ResultScreenState extends State<ResultScreen> {
                     });
                   },
                   itemBuilder: (context, index) {
-                    return Center(
-                      child: Container(
-                        margin: EdgeInsets.all(16.0), // 박스 주변의 여백을 설정합니다.
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Colors.grey), // 박스 테두리 색상과 두께를 설정합니다.
-                          borderRadius:
-                              BorderRadius.circular(8.0), // 박스의 모서리를 둥글게 설정합니다.
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              8.0), // 이미지의 모서리를 둥글게 설정합니다.
-                          child: Image.network(
-                            imageUrls[index],
-                            fit: BoxFit.contain,
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            alignment: Alignment.topCenter,
+                            children: [
+                              Center(
+                                child: Image.network(
+                                  imageUrls[index],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Container(
+                                width: double.infinity,
+                                color: Colors.black.withOpacity(0.5),
+                                padding: const EdgeInsets.all(8.0),
+                                child: const Text(
+                                  "해당 약이 맞을 경우 확인,\n 모든 이미지에 약이 없는 경우 없음을 눌러주세요.",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                print("확인 버튼 클릭됨.");
+                              },
+                              child: const Text(
+                                "확인",
+                                selectionColor: Colors.black,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                print("없음 버튼 클릭됨.");
+                              },
+                              child: const Text("없음"),
+                            ),
+                          ],
+                        ),
+                      ],
                     );
                   },
                 ),
                 Positioned(
-                  bottom: 16.0,
+                  bottom: 70.0, // 버튼의 위치를 조정합니다.
                   right: 16.0,
                   child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 4.0),
                     color: Colors.black54,
                     child: Text(
                       '${_currentPage + 1}/${imageUrls.length}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                      ),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
