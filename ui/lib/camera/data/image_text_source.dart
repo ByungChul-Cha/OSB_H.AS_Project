@@ -18,7 +18,6 @@ class _ImageTextSourceState extends State<ImageTextSource> {
   XFile? _imageFront;
   XFile? _imageBack;
   final ImagePicker _picker = ImagePicker();
-  //String _extractedText = '';
 
   Future<void> _pickImage(bool isFront) async {
     final source = await _showImageSourceDialog();
@@ -67,11 +66,6 @@ class _ImageTextSourceState extends State<ImageTextSource> {
       final RecognizedText recognisedTextBack =
           await textDetector.processImage(inputImageBack);
 
-      /*setState(() {
-      _extractedText = 'Front Image Text:\n${recognisedTextFront.text}\n\n' +
-          'Back Image Text:\n${recognisedTextBack.text}';
-    });*/
-
       sendDataToServer([
         recognisedTextFront.text,
         recognisedTextBack.text,
@@ -116,22 +110,13 @@ class _ImageTextSourceState extends State<ImageTextSource> {
 
     if (response.statusCode == 200) {
       print('Data sent successfully');
-      print('Response: ${response.body}');
-      saveDataToFirebaseStorage(response.body);
+      saveDataToFirebaseStorage(response
+          .body); // Firebase Storage original_pilldata에 data.json 형태로 저장
       //navigateToResultScreen(response.body);
     } else {
       print('Failed to send data');
     }
   }
-
-  /*void navigateToResultScreen(String responseBody) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ResultScreen(data: responseBody),
-      ),
-    );
-  }*/
 
   @override
   void initState() {
@@ -169,12 +154,38 @@ class _ImageTextSourceState extends State<ImageTextSource> {
                     ),
                   );
                 } else {
+                  _showLoadingDialog();
                   await _extractTextFromImages();
+                  Navigator.pop(context);
+                  //로딩 창 닫기
                 }
               },
               child: const Text('이미지 추출하기'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => PopScope(
+        onPopInvoked: (isPopped) => {},
+        child: const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text('추출 중입니다.'),
+              ],
+            ),
+          ),
         ),
       ),
     );

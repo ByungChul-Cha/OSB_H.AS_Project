@@ -15,7 +15,8 @@ Future<void> saveDataToFirebaseStorage(String data) async {
   // Firebase Storage에 데이터 업로드
   try {
     await ref.putData(Uint8List.fromList(dataBytes));
-    print('Data successfully saved to Firebase Storage in folder pilldata');
+    print(
+        'Data successfully saved to Firebase Storage in folder original_pilldata');
   } catch (e) {
     print('Failed to save data to Firebase Storage: $e');
   }
