@@ -121,7 +121,6 @@ class _ImageTextSourceState extends State<ImageTextSource> {
       //navigateToResultScreen(response.body);
     } else {
       print('Failed to send data');
-      print(response.statusCode);
     }
   }
 

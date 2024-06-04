@@ -30,7 +30,7 @@ exports.splitAndOrganizeJsonFile = functions.storage
     // 각 항목을 ITEM_SEQ 폴더에 저장
     for (const rowData of rowDataList) {
       const itemSeq = rowData["ITEM_SEQ"]; // ITEM_SEQ 변수값 추출
-      const folderName = `split_files/${itemSeq}`; // 폴더명 설정
+      const folderName = `split_pilldata/${itemSeq}`; // 폴더명 설정
       const exists = await bucket.getFiles({ prefix: folderName });
 
       // 해당 폴더(ITEM_SEQ)가 존재하지 않을 때만 파일 생성 및 업로드

@@ -4,17 +4,18 @@ module.exports = {
     node: true,
   },
   parserOptions: {
-    "ecmaVersion": 2018,
+    ecmaVersion: 2018,
   },
-  extends: [
-    "eslint:recommended",
-    "google",
-  ],
+  extends: ["eslint:recommended", "plugin:prettier/recommended"],
   rules: {
-    "no-restricted-globals": ["error", "name", "length"],
-    "prefer-arrow-callback": "error",
-    "quotes": ["error", "double", {"allowTemplateLiterals": true}],
+    "prettier/prettier": [
+      "error",
+      {
+        printWidth: 80,
+      },
+    ],
   },
+
   overrides: [
     {
       files: ["**/*.spec.*"],
