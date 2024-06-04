@@ -23,7 +23,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
     final source = await _showImageSourceDialog();
     if (source == null) return;
 
-    final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+    final pickedImage = await _picker.pickImage(source: source);
     if (pickedImage != null) {
       setState(() {
         if (isFront) {
@@ -43,8 +43,8 @@ class _ImageTextSourceState extends State<ImageTextSource> {
         content: const Text('이미지를 가져올 위치를 선택하세요.'),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context, ImageSource.gallery),
             child: const Text('갤러리'),
+            onPressed: () => Navigator.pop(context, ImageSource.gallery),
           ),
           TextButton(
             child: const Text('카메라'),
