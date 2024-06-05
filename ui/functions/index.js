@@ -61,3 +61,26 @@ exports.splitAndOrganizeJsonFile = functions.storage
     console.log(`Deleted original file: ${filePath}`);
     return null;
   });
+
+// Firebase Storage의 split_pilldata 폴더 삭제
+exports.deleteSplitPillDataFolder = functions.https.onCall(async () => {
+  try {
+    const bucket = admin.storage().bucket();
+    const [splitPillDataFiles] = await bucket.getFiles({
+      prefix: "split_pilldata/",
+    });
+    for (const file of splitPillDataFiles) {
+      await file.delete();
+    }
+    console.log("Deleted all files in split_pilldata folder");
+
+    await bucket.deleteFiles({ prefix: "split_pilldata/" });
+    console.log("Deleted split_pilldata folder");
+  } catch (error) {
+    console.error("Error deleting split_pilldata folder:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to delete split_pilldata folder",
+    );
+  }
+});

@@ -21,7 +21,7 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   Future<void> delayedFetchFolderNames() async {
-    await Future.delayed(Duration(seconds: 20));
+    await Future.delayed(Duration(seconds: 30));
     await fetchFolderNames();
   }
 

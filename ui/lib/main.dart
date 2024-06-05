@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'camera/camera.dart';
 import 'community/community.dart';
 import 'search.dart';
-// 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import "package:flutter/material.dart";
 import 'package:has_app/userInfo/login.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      deleteSplitPillDataFolder();
+    });
+
     fetchUserData();
   }
 
@@ -173,5 +177,17 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       //메뉴 버튼을 만듦
     );
+  }
+}
+
+Future<void> deleteSplitPillDataFolder() async {
+  try {
+    final functions = FirebaseFunctions.instance;
+    final HttpsCallable callable =
+        functions.httpsCallable('deleteSplitPillDataFolder');
+    await callable.call();
+    print('split_pilldata folder deleted successfully');
+  } catch (e) {
+    print('Error deleting split_pilldata folder: $e');
   }
 }
