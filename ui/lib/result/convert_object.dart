@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class DrugInfo {
   final String bizRno;
   final String changeDate;

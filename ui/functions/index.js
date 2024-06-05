@@ -25,10 +25,9 @@ exports.splitAndOrganizeJsonFile = functions.storage
     await bucket.file(filePath).download({ destination: tempFilePath });
     const data = fs.readFileSync(tempFilePath, "utf8");
     const jsonData = JSON.parse(data);
-    const rowDataList = jsonData["row_data_list"];
 
     // 각 항목을 ITEM_SEQ 폴더에 저장
-    for (const rowData of rowDataList) {
+    for (const rowData of jsonData) {
       const itemSeq = rowData["ITEM_SEQ"]; // ITEM_SEQ 변수값 추출
       const folderName = `split_pilldata/${itemSeq}`; // 폴더명 설정
 

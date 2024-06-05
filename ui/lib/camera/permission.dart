@@ -1,9 +1,6 @@
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> requestCameraPermission() async {
-  final serviceStatus = await Permission.camera.isGranted ;
-  bool isCameraOn = serviceStatus == ServiceStatus.enabled;
-
   final status = await Permission.camera.request();
 
   if (status == PermissionStatus.granted) {
@@ -17,9 +14,6 @@ Future<void> requestCameraPermission() async {
 }
 
 Future<void> requestPhotosPermission() async {
-  final serviceStatusPhotos = await Permission.photos.isGranted ;
-  bool isPhoto = serviceStatusPhotos == ServiceStatus.enabled;
-
   final status = await Permission.photos.request();
 
   if (status == PermissionStatus.granted) {

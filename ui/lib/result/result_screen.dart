@@ -1,5 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:has_app/community/community.dart';
+import 'package:has_app/main.dart';
 
 class ResultScreen extends StatefulWidget {
   @override
@@ -15,7 +17,12 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   void initState() {
     super.initState();
-    fetchFolderNames();
+    delayedFetchFolderNames();
+  }
+
+  Future<void> delayedFetchFolderNames() async {
+    await Future.delayed(Duration(seconds: 20));
+    await fetchFolderNames();
   }
 
   Future<void> fetchFolderNames() async {
@@ -113,7 +120,42 @@ class _ResultScreenState extends State<ResultScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                print("없음 버튼 클릭됨.");
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('알약 찾기 실패'),
+                                      content: Text(
+                                          '알약을 찾을 수 없습니다. 커뮤니티로 이동하시겠습니까?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            // '예' 버튼 클릭 시 커뮤니티 페이지로 이동
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Community()),
+                                            );
+                                          },
+                                          child: Text('예'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            // '아니요' 버튼 클릭 시 메인 페이지로 이
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MyHomePage()),
+                                            );
+                                          },
+                                          child: Text('아니요'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                               child: const Text("없음"),
                             ),
