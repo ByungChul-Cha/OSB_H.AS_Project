@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import '../utils/set_server_ip.dart';
 import 'permission.dart';
 import 'dart:async';
 
@@ -111,7 +112,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
   }
 
   void sendDataToServer(List<String> searchTerms) async {
-    const url = 'http://10.0.2.2:5000/search';
+    const url = desktopServerIP;
     try {
       print("it's try");
       final response = await http

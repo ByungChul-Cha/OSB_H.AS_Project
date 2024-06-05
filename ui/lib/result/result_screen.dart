@@ -124,8 +124,8 @@ class _ResultScreenState extends State<ResultScreen> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: Text('알약 찾기 실패'),
-                                      content: Text(
+                                      title: const Text('알약 찾기 실패'),
+                                      content: const Text(
                                           '알약을 찾을 수 없습니다. 커뮤니티로 이동하시겠습니까?'),
                                       actions: [
                                         TextButton(
