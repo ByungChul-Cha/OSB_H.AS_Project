@@ -1,7 +1,10 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/community/community.dart';
-import 'package:has_app/main.dart';
+import 'package:http/http.dart' as http;
+import 'package:has_app/utils/set_server_ip.dart';
+import 'package:path/path.dart' as path;
+import 'about_pill_info.dart';
 
 class ResultScreen extends StatefulWidget {
   @override
@@ -59,6 +62,16 @@ class _ResultScreenState extends State<ResultScreen> {
     });
   }
 
+  Future<String> fetchItemNameFromServer(String itemSeq) async {
+    final response = await http
+        .get(Uri.parse('$desktopServerIP/get_item_name?itemSeq=$itemSeq'));
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to fetch item name');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,8 +123,22 @@ class _ResultScreenState extends State<ResultScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ElevatedButton(
-                              onPressed: () {
-                                print("확인 버튼 클릭됨.");
+                              onPressed: () async {
+                                String decodeUrl =
+                                    Uri.decodeFull(imageUrls[_currentPage]);
+                                String fileName =
+                                    path.basenameWithoutExtension(decodeUrl);
+                                print(fileName);
+                                String itemName =
+                                    await fetchItemNameFromServer(fileName);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AboutPillInfo(
+                                        imageUrl: imageUrls[_currentPage],
+                                        itemName: itemName),
+                                  ),
+                                );
                               },
                               child: const Text(
                                 "확인",
@@ -142,13 +169,8 @@ class _ResultScreenState extends State<ResultScreen> {
                                         ),
                                         TextButton(
                                           onPressed: () {
-                                            // '아니요' 버튼 클릭 시 메인 페이지로 이
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MyHomePage()),
-                                            );
+                                            // '아니요' 버튼 클릭 시 dialog 닫기
+                                            Navigator.of(context).pop();
                                           },
                                           child: Text('아니요'),
                                         ),

@@ -115,7 +115,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
   }
 
   void sendDataToServer(List<String> searchTerms) async {
-    const url = emulServerIP;
+    const url = '$desktopServerIP/search';
     try {
       print("it's try");
       final response = await http

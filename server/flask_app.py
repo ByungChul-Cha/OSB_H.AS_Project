@@ -6,10 +6,11 @@ app = Flask(__name__)
 
 # 스레드 로컬 변수로 데이터베이스 연결 관리
 _local = threading.local()
+DATABASE_PATH = 'D://Database/Pill/pillList.sqlite'
 
 def get_db_connection():
     if not hasattr(_local, 'conn'):
-        _local.conn = sqlite3.connect('D://Database/Pill/pillList.sqlite')
+        _local.conn = sqlite3.connect(DATABASE_PATH)
         _local.c = _local.conn.cursor()
     return _local.c
 
@@ -37,21 +38,27 @@ def search():
 
     return jsonify(row_data_list)
 
+@app.route('/get_item_name', methods=['Get'])
+def get_item_name():
+    item_seq = request.args.get('itemSeq')
+    
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT ITEM_NAME FROM pill_kr WHERE ITEM_SEQ = ?", (item_seq,))
+        result = cursor.fetchone()
+        
+        if result:
+            return result[0]  # ITEM_NAME 값 반환
+        else:
+            return 'Item not found', 404
+    
+    except sqlite3.Error as e:
+        return f'Database error: {e}', 500
+    
+    finally:
+        if conn:
+            conn.close()
 
-   #with open(file_path, 'r', encoding='utf-8') as file:
-   #   csv_reader = csv.DictReader(file)
-   #   for row in csv_reader:
-   #         for term in search_terms:
-   #            if term in row['PRINT_FRONT']:
-   #               print_front_list.append(row['PRINT_FRONT'])
-   #               row_data_list.append(row)
-   #            if term in row['PRINT_BACK']:
-   #              print_back_list.append(row['PRINT_BACK'])
-   #               row_data_list.append(row)
-   #return jsonify({
-   #   'print_front_list': print_front_list,
-   #   'print_back_list': print_back_list,
-   #   'row_data_list': row_data_list
-   #}) 
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,2 +1,2 @@
-const emulServerIP = 'http://10.0.2.2:5000/search';
-const desktopServerIP = 'http://192.168.55.120:5000/search';
+const emulServerIP = 'http://10.0.2.2:5000';
+const desktopServerIP = 'http://219.254.163.188:5000';
