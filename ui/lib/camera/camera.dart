@@ -68,24 +68,27 @@ class _ImageTextSourceState extends State<ImageTextSource> {
       RecognizedText recognisedTextBack =
           await textDetector.processImage(inputImageBack);
 
-      if (recognisedTextFront.text.isEmpty) {
-        print('인식된 텍스트가 없습니다.');
-        recognisedTextFront = recognisedTextBack;
+      if (recognisedTextFront.text.isEmpty && recognisedTextBack.text.isEmpty) {
+        // 다이얼로그 보여주고 커뮤니티 창으로 이동
       } else {
-        print('인식된 텍스트: ${recognisedTextFront.text}');
-      }
+        if (recognisedTextFront.text.isEmpty) {
+          print('인식된 텍스트가 없습니다.');
+          recognisedTextFront = recognisedTextBack;
+        } else {
+          print('인식된 텍스트: ${recognisedTextFront.text}');
+        }
 
-      if (recognisedTextBack.text.isEmpty) {
-        print('인식된 텍스트가 없습니다.2');
-        recognisedTextBack = recognisedTextFront;
-      } else {
-        print('인식된 텍스트: ${recognisedTextBack.text}');
+        if (recognisedTextBack.text.isEmpty) {
+          print('인식된 텍스트가 없습니다.2');
+          recognisedTextBack = recognisedTextFront;
+        } else {
+          print('인식된 텍스트: ${recognisedTextBack.text}');
+        }
+        sendDataToServer([
+          recognisedTextFront.text,
+          recognisedTextBack.text,
+        ]);
       }
-      sendDataToServer([
-        recognisedTextFront.text,
-        recognisedTextBack.text,
-      ]);
-
       await textDetector.close();
     }
   }
@@ -112,7 +115,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
   }
 
   void sendDataToServer(List<String> searchTerms) async {
-    const url = desktopServerIP;
+    const url = emulServerIP;
     try {
       print("it's try");
       final response = await http
