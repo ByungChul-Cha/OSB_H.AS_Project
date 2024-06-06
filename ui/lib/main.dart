@@ -9,6 +9,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import "package:flutter/material.dart";
 import 'package:has_app/userInfo/login.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +38,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String userName = '사용자';
   String userEmail = '이메일';
+  String profileImageUrl = '';
+  File? _image;
 
   @override
   void initState() {
@@ -42,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
     fetchUserData();
   }
 
-  void fetchUserData() async {
+  Future<void> fetchUserData() async {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -55,12 +60,105 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           userName = userData['name'] ?? '이름 없음';
           userEmail = userData['email'] ?? '이메일 없음';
+          profileImageUrl = userData['profileImageUrl'] ?? '';
         });
       }
     }
   }
 
-  @override
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('선택된 이미지 없음');
+      }
+    });
+  }
+
+  Future<void> _uploadImage() async {
+    if (_image == null) return;
+
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        String fileName = 'profile_${user.uid}.png';
+        Reference firebaseStorageRef =
+            FirebaseStorage.instance.ref().child('profile_images/$fileName');
+        UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+        String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'profileImageUrl': downloadURL});
+
+        setState(() {
+          profileImageUrl = downloadURL;
+        });
+
+        print("프로필 사진 URL: $downloadURL");
+      }
+    } catch (e) {
+      print('이미지 업로드 오류: $e');
+    }
+  } //프로필 사진 업로드 코드
+
+    Future<void> _deleteImage() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        String fileName = 'profile_${user.uid}.png';
+        Reference firebaseStorageRef =
+            FirebaseStorage.instance.ref().child('profile_images/$fileName');
+        await firebaseStorageRef.delete();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'profileImageUrl': ''});
+
+        setState(() {
+          profileImageUrl = '';
+        });
+
+        print("프로필 사진 삭제");
+      }
+    } catch (e) {
+      print('프로필 사진 삭제 오류: $e');
+    }
+  } //프로필 사진 삭제 코드
+
+   void _showProfileDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('프로필 사진 삭제'),
+          content: const Text('프로필 사진을 기본으로 설정하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () async {
+                await _deleteImage();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } //프로필 사진 삭제 여부를 묻는 팝업
+
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -79,12 +177,28 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           children: [
             UserAccountsDrawerHeader(
-              currentAccountPicture: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.account_circle,
-                  size: 70.0,
-                  color: Colors.grey,
+              currentAccountPicture: GestureDetector(
+                onTap: () async {
+                  await _pickImage();
+                  await _uploadImage();
+                },
+                onLongPress: () {
+                  if (profileImageUrl.isNotEmpty) {
+                     _showProfileDialog();
+                  }
+                },
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  backgroundImage: profileImageUrl.isNotEmpty
+                      ? NetworkImage(profileImageUrl)
+                      : null,
+                  child: profileImageUrl.isEmpty
+                      ? Icon(
+                          Icons.account_circle,
+                          size: 70.0,
+                          color: Colors.grey,
+                        )
+                      : null,
                 ),
               ),
               accountName: Text(userName),
@@ -134,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               leading: const Icon(Icons.search),
               iconColor: Colors.black,
-              focusColor: Colors.black,
+              focusColor: Colors.grey,
               title: const Text('이름으로 검색'),
               onTap: () {
                 Navigator.push(
@@ -147,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               leading: const Icon(Icons.photo_camera),
               iconColor: Colors.black,
-              focusColor: Colors.black,
+              focusColor: Colors.grey,
               title: const Text('카메라로 검색'),
               onTap: () {
                 Navigator.push(context,
@@ -160,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               leading: const Icon(Icons.chat),
               iconColor: Colors.black,
-              focusColor: Colors.black,
+              focusColor: Colors.grey,
               title: const Text('커뮤니티'),
               onTap: () {
                 Navigator.push(context,
@@ -168,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               trailing: const Icon(Icons.navigate_next),
             ),
-            //메뉴에  커뮤니티 창을 만듦
+            //메뉴에 커뮤니티 창을 만듦
           ],
         ),
       ),
