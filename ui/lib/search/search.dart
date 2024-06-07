@@ -171,7 +171,9 @@ class _SearchPageState extends State<SearchPage> {
       'selectedShape': selectedShape,
       'selectedColor': selectedColor,
     };
-
+    print(inputText);
+    print(selectedShape);
+    print(selectedColor);
     try {
       final response = await http.post(
         url,

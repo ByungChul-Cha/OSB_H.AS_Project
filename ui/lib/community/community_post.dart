@@ -177,7 +177,7 @@ class _CommunityPostBoardState extends State<CommunityPostBoard> {
                         "imageUrls": imageUrls,
                         "name": userName,
                       });
-                      Navigator.push(context,
+                      Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) => Community()));
                     }
                     if (titleController.text.isEmpty ||
