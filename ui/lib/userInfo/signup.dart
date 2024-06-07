@@ -5,6 +5,10 @@ import 'package:has_app/userInfo/login.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SignUpScreen extends StatefulWidget {
+  final VoidCallback toggleTheme;
+
+  SignUpScreen({required this.toggleTheme});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -41,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => LoginScreen(toggleTheme: widget.toggleTheme)),
       );
     } catch (e) {
       print('Error: $e');

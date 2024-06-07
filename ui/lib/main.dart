@@ -19,18 +19,35 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = false;
+
+  void _toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'H.AS App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginScreen(),
+      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      home: LoginScreen(toggleTheme: _toggleTheme),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  final VoidCallback toggleTheme;
+
+  MyHomePage({required this.toggleTheme});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -158,6 +175,33 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   } //프로필 사진 삭제 여부를 묻는 팝업
 
+  void _showThemeChangeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('테마 변경'),
+          content: const Text('테마를 변경하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                widget.toggleTheme();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } //테마 변경 여부를 묻는 팝업
+
  @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,6 +216,12 @@ class _MyHomePageState extends State<MyHomePage> {
         //타이틀의 색깔 설정
         backgroundColor: Colors.blue,
         //앱 바의 배경 색 설정
+        actions: [
+          IconButton(
+            icon: Icon(Icons.brightness_6),
+            onPressed: _showThemeChangeDialog,
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -229,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (context) => LoginScreen()));
+                                        builder: (context) => LoginScreen(toggleTheme: widget.toggleTheme)));
                               },
                             )
                           ],
@@ -278,7 +328,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('커뮤니티'),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Community()));
+                 MaterialPageRoute(builder: (context) => Community()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),
