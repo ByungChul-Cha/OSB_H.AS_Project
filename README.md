@@ -57,5 +57,5 @@ python flask_app.py
 
 ## 연락처
 
-- 차병철 (@ByungChul-Cha) (lastsc1404@gmail.com)
+- [차병철 (@ByungChul-Cha)](https://github.com/ByungChul-Cha) (lastsc1404@gmail.com)
 - 이민재 (@02LMJ)
