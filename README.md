@@ -9,7 +9,7 @@
 git clone https://github.com/ByungChul-Cha/OSB_H.AS_Project.git
 ```
 
-2. python 및 flutter 설치
+2. Python 및 Dart, Flutter 설치
 ```
 
 ```
