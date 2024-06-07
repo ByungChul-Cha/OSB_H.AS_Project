@@ -1,4 +1,4 @@
-## Pill_Search
+# Pill_Search
 
 본 프로젝트는 카메라로 알약 검색을 하는 기능, 커뮤니티 기능을 구현하였다. 카메라로 검색 기능을 통해 사용자에게 보다 빠르고 편하게 알약의 정보를 알려줄 수 있다. 또한, 커뮤니티 기능을 통해 약에 대한 정보 및 주의사항들을 서로 공유하여 빠르게 알 수 있도록 하였다.
 
@@ -53,7 +53,7 @@ python flask_app.py
 
 ## 라이선스
 
-
+- [Apache License Version 2.0](https://github.com/ByungChul-Cha/OSB_H.AS_Project/blob/feature_search/LICENSE)
 
 ## 연락처
 
