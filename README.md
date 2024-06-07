@@ -46,10 +46,16 @@ flutter pub get
 1. server 폴더로 이동
 
 ```
+cd server/
 python flask_app.py
 ```
 
-2. ui 폴더의 main.dart를 실행한다.
+2. ui 폴더로 이동
+
+```
+cd ui/lib/
+flutter run main.dart
+```
 
 ## 라이선스
 
