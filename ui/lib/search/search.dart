@@ -84,13 +84,16 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
             const SizedBox(height: 8.0),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 6,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                children: [
-                  for (final color in [
+            Flexible(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 6,
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                ),
+                itemCount: 16,
+                itemBuilder: (context, index) {
+                  final color = [
                     '하양',
                     '노랑',
                     '주황',
@@ -107,24 +110,44 @@ class _SearchPageState extends State<SearchPage> {
                     '회색',
                     '검정',
                     '투명'
-                  ])
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedColor = color;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: selectedColor == color
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey[300],
-                        foregroundColor: selectedColor == color
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                      child: Text(color),
+                  ][index];
+                  final buttonColor = [
+                    Colors.white,
+                    Colors.yellow,
+                    Colors.orange,
+                    Colors.pink,
+                    Colors.red,
+                    Colors.brown,
+                    Colors.lightGreen,
+                    Colors.green,
+                    Colors.teal,
+                    Colors.blue,
+                    Colors.blueAccent,
+                    Colors.purple,
+                    Colors.purple,
+                    Colors.grey,
+                    Colors.black,
+                    Color.fromRGBO(255, 255, 255, 0.5),
+                  ][index];
+                  final textColor = buttonColor.computeLuminance() > 0.5
+                      ? Colors.black
+                      : Colors.white;
+                  return ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedColor = color;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedColor == color
+                          ? Theme.of(context).primaryColor
+                          : buttonColor,
+                      foregroundColor:
+                          selectedColor == color ? Colors.white : textColor,
                     ),
-                ],
+                    child: Text(color),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 16.0),
