@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'camera/camera.dart';
 import 'community/community.dart';
-import 'search.dart';
+import 'search/search.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
@@ -140,8 +140,8 @@ class _MyHomePageState extends State<MyHomePage> {
               focusColor: Colors.black,
               title: const Text('이름으로 검색'),
               onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Search()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchPage()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
-import 'package:http/http.dart';
 
 class AboutPillInfo extends StatefulWidget {
   final String imageUrl;

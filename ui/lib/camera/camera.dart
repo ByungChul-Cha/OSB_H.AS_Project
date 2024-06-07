@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:has_app/camera/data/savedata.dart';
-import 'package:has_app/result/result_screen.dart';
+import 'package:has_app/result/camera_result_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

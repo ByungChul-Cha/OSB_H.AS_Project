@@ -60,5 +60,76 @@ def get_item_name():
         if conn:
             conn.close()
 
+@app.route('/name_search', methods=['POST'])
+def search_drug_info():
+    data = request.get_json()
+    input_text = data['inputText']
+    selected_shape = data['selectedShape']
+    selected_color = data['selectedColor']
+
+    result = {}
+    conn = None
+    try:
+        # SQLite 데이터베이스 연결
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+
+        # inputText, selectedShape, selectedColor 검색
+        if input_text:
+            query = """
+                SELECT ITEM_SEQ
+                FROM pill_kr
+                WHERE PRINT_FRONT = ?
+                UNION
+                SELECT ITEM_SEQ
+                FROM pill_kr
+                WHERE PRINT_BACK = ?
+            """
+            params = (input_text, input_text)
+            cursor.execute(query, params)
+            item_seq_list = [row[0] for row in cursor.fetchall()]
+
+            query = """
+                SELECT ITEM_SEQ
+                FROM pill_kr
+                WHERE DRUG_SHAPE = ? AND ITEM_SEQ IN ({})
+            """.format(','.join(['?'] * len(item_seq_list)))
+            params = [selected_shape] + item_seq_list
+            cursor.execute(query, params)
+            item_seq_list = [row[0] for row in cursor.fetchall()]
+
+            query = """
+                SELECT ITEM_SEQ
+                FROM pill_kr
+                WHERE COLOR_CLASS1 = ? AND ITEM_SEQ IN ({})
+            """.format(','.join(['?'] * len(item_seq_list)))
+            params = [selected_color] + item_seq_list
+            cursor.execute(query, params)
+            result['ITEM_SEQ'] = cursor.fetchone()[0] if cursor.fetchone() else None
+        else:
+            query = """
+                SELECT ITEM_SEQ
+                FROM pill_kr
+                WHERE DRUG_SHAPE = ?
+                AND ITEM_SEQ IN (
+                    SELECT ITEM_SEQ
+                    FROM pill_kr
+                    WHERE COLOR_CLASS2 = ?
+                )
+                LIMIT 1
+            """
+            params = (selected_shape, selected_color)
+            cursor.execute(query, params)
+            result['ITEM_SEQ'] = cursor.fetchone()[0] if cursor.fetchone() else None
+
+    except sqlite3.Error as e:
+        print(f"Error connecting to database: {e}")
+        return jsonify({'error': 'Error connecting to database'}), 500
+    finally:
+        if conn is not None:
+            conn.close()
+
+    return jsonify(result)
+
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port=5000, debug=True)
