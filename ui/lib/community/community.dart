@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:has_app/community/community_post.dart';
 import 'package:has_app/community/community_post_detail.dart';
+import 'package:has_app/main.dart';
 
 class Community extends StatelessWidget {
   @override
@@ -25,6 +26,14 @@ class _CommunityBoardState extends State<CommunityBoard> {
       .collection('posts')
       .orderBy('createdAt', descending: true);
   // 이전에 작성한 글 불러옴
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      deleteSplitPillDataFolder();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

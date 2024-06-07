@@ -23,5 +23,11 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Contributor
 
-- 차병철 (@ByungChul-Cha) 
+- 차병철 (@ByungChul-Cha)
 - 이민재 (@02LMJ)
+
+## apk 배포
+
+```bash
+flutter build apk --release --target-platform=android-arm64
+```

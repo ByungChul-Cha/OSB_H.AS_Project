@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 
 class CommunityPostDetail extends StatefulWidget {
   final DocumentSnapshot post;
-
   CommunityPostDetail({required this.post});
 
   @override
@@ -112,12 +111,12 @@ class _CommunityPostDetailState extends State<CommunityPostDetail> {
                       right: 10,
                       bottom: 10,
                       child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         color: Colors.black54,
                         child: Text(
                           "${currentPage + 1}/${imageUrls.length}",
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
