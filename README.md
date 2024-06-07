@@ -1,33 +1,57 @@
-# OSB_H.AS_Project
+## 설치 방법
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-## Services
-
-- Medicine search with information
-- Medicine search with camera
-- Community for users
-
-## Contributor
-
-- 차병철 (@ByungChul-Cha)
-- 이민재 (@02LMJ)
-
-## apk 배포
-
-```bash
-flutter build apk --release --target-platform=android-arm64
+1. 프로젝트 클론받기
 ```
+git clone https://github.com/ByungChul-Cha/OSB_H.AS_Project.git
+```
+
+2. python 및 flutter 설치
+```
+
+```
+
+3. 시스템 환경변수 설정
+
+
+## 의존성
+
+- python 3.9.6
+- dart 3.4.1
+- flutter 3.22.1
+
+- python
+1. 본 프로젝트를 클론받고 server 폴더로 이동한다.
+2. bash에 본 명령어를 입력한다.
+
+```python
+pip install -r requirements.txt
+```
+
+-flutter
+1. 본 프로젝트를 클론받고 ui 폴더로 이동한다.
+2. bash에 본 명령어를 입력한다.
+
+```dart
+flutter pub get
+```
+
+## 사용 방법
+
+모든 설정을 완료했다면 다음 과정을 실행한다.
+
+1. server 폴더로 이동
+
+```
+python flask_app.py
+```
+
+2. ui 폴더의 main.dart를 실행한다.
+
+## 라이선스
+
+
+
+## 연락처
+
+- 차병철 (@ByungChul-Cha) (lastsc1404@gmail.com)
+- 이민재 (@02LMJ)
