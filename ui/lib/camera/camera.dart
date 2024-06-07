@@ -136,7 +136,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
         // Firebase Storage original_pilldata에 data.json 형태로 저장
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ResultScreen()),
+          MaterialPageRoute(builder: (context) => CameraResultScreen()),
         );
       } else {
         print('Failed to send data: ${response.statusCode}');

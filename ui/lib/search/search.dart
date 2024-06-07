@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:has_app/result/search_result_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,8 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   String inputText = '';
   String selectedShape = '';
-  String selectedType = '';
   String selectedColor = '';
+  Map<String, dynamic> serverResponse = {};
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +146,6 @@ class _SearchPageState extends State<SearchPage> {
     final data = {
       'inputText': inputText,
       'selectedShape': selectedShape,
-      'selectedType': selectedType,
       'selectedColor': selectedColor,
     };
 
@@ -159,8 +159,23 @@ class _SearchPageState extends State<SearchPage> {
       if (response.statusCode == 200) {
         // 전송 성공
         print('Data sent to server successfully');
+        print(response.body);
+        setState(() {
+          serverResponse = jsonDecode(response.body);
+        });
+        if (serverResponse['item_seq'] != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SearchResultScreen(
+                itemSeq: serverResponse['item_seq'],
+              ),
+            ),
+          );
+        } else {
+          print('ITEM_SEQ is null');
+        }
       } else {
-        // 전송 실패
         print('Failed to send data to server: ${response.statusCode}');
       }
     } catch (e) {

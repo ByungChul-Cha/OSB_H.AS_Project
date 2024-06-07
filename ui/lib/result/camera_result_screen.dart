@@ -6,12 +6,12 @@ import 'package:has_app/utils/set_server_ip.dart';
 import 'package:path/path.dart' as path;
 import 'about_pill_info.dart';
 
-class ResultScreen extends StatefulWidget {
+class CameraResultScreen extends StatefulWidget {
   @override
-  _ResultScreenState createState() => _ResultScreenState();
+  _CameraResultScreenState createState() => _CameraResultScreenState();
 }
 
-class _ResultScreenState extends State<ResultScreen> {
+class _CameraResultScreenState extends State<CameraResultScreen> {
   List<String> folderNames = [];
   List<String> imageUrls = [];
   int _currentPage = 0;
