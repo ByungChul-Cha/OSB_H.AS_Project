@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'camera/camera.dart';
 import 'community/community.dart';
-import 'search.dart';
+import 'search/search.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('H.AS Medi App'),
+        title: const Text('Pill Search'),
         //앱 상단에 뜨는 이름
         centerTitle: true,
         //이름을 중앙에 배치
@@ -77,6 +77,41 @@ class _MyHomePageState extends State<MyHomePage> {
         //타이틀의 색깔 설정
         backgroundColor: Colors.blue,
         //앱 바의 배경 색 설정
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/image/pill.png',
+              width: 100,
+              height: 100,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Pill Search',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              '개발자 : 차병철, 이민재',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+            const Text(
+              '개발 기간 : 2024년 1학기 충북대학교 오픈소스 기초프로젝트',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -140,8 +175,8 @@ class _MyHomePageState extends State<MyHomePage> {
               focusColor: Colors.black,
               title: const Text('이름으로 검색'),
               onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Search()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchPage()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),

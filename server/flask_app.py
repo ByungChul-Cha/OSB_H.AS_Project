@@ -60,5 +60,38 @@ def get_item_name():
         if conn:
             conn.close()
 
+@app.route('/name_search', methods=['POST'])
+def name_search():
+    # 클라이언트에서 전달된 데이터 받기
+    data = request.get_json()
+    inputText = data.get('inputText')
+    selectedShape = data.get('selectedShape')
+    selectedColor = data.get('selectedColor')
+
+    # 클라이언트에서 전송된 데이터 확인
+    print(f"inputText: {inputText}")
+    print(f"selectedShape: {selectedShape}")
+    print(f"selectedColor: {selectedColor}")
+
+    # SQLite 데이터베이스 쿼리 실행
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        cursor = conn.cursor()
+        sql = """
+            SELECT ITEM_SEQ
+            FROM pill_kr
+            WHERE PRINT_BACK = ? OR PRINT_FRONT = ?
+              AND DRUG_SHAPE = ?
+              AND (COLOR_CLASS1 = ? OR COLOR_CLASS2 = ?)
+        """
+        cursor.execute(sql, (inputText, inputText, selectedShape, selectedColor, selectedColor))
+        result = cursor.fetchone()
+
+    # 결과 반환
+    if result:
+        return jsonify({'item_seq': result[0]})
+    else:
+        return jsonify({'item_seq': None})
+
+
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port=5000, debug=True)

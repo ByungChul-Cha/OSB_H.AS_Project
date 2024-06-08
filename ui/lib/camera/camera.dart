@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:has_app/camera/data/savedata.dart';
-import 'package:has_app/result/result_screen.dart';
+import 'package:has_app/result/camera_result_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import '../community/community.dart';
 import '../utils/set_server_ip.dart';
 import 'permission.dart';
 import 'dart:async';
@@ -69,7 +70,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
           await textDetector.processImage(inputImageBack);
 
       if (recognisedTextFront.text.isEmpty && recognisedTextBack.text.isEmpty) {
-        // 다이얼로그 보여주고 커뮤니티 창으로 이동
+        showNoResultDialog(context);
       } else {
         if (recognisedTextFront.text.isEmpty) {
           print('인식된 텍스트가 없습니다.');
@@ -106,10 +107,10 @@ class _ImageTextSourceState extends State<ImageTextSource> {
         child: isFront
             ? (_imageFront != null
                 ? Image.file(File(_imageFront!.path), fit: BoxFit.cover)
-                : const Center(child: Text('앞쪽 이미지를 선택하세요.')))
+                : const Center(child: Text('정면 이미지')))
             : (_imageBack != null
                 ? Image.file(File(_imageBack!.path), fit: BoxFit.cover)
-                : const Center(child: Text('뒤쪽 이미지를 선택하세요.'))),
+                : const Center(child: Text('뒷면 이미지'))),
       ),
     );
   }
@@ -131,12 +132,16 @@ class _ImageTextSourceState extends State<ImageTextSource> {
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
-        print('Data sent successfully');
-        saveDataToFirebaseStorage(response.body);
+        final responseData = jsonDecode(response.body) as List<dynamic>;
+        if (responseData.isEmpty) {
+          showNoResultDialog(context);
+        } else {
+          saveDataToFirebaseStorage(response.body);
+        }
         // Firebase Storage original_pilldata에 data.json 형태로 저장
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ResultScreen()),
+          MaterialPageRoute(builder: (context) => CameraResultScreen()),
         );
       } else {
         print('Failed to send data: ${response.statusCode}');
@@ -157,6 +162,9 @@ class _ImageTextSourceState extends State<ImageTextSource> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showInitialDialog(context);
+    });
   }
 
   @override
@@ -165,38 +173,71 @@ class _ImageTextSourceState extends State<ImageTextSource> {
       appBar: AppBar(
         title: const Text('카메라 검색'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildImageBox(true),
-                _buildImageBox(false),
+      body: _buildMainContent(context),
+    );
+  }
+
+  Widget _buildMainContent(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildImageBox(true),
+              _buildImageBox(false),
+            ],
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () async {
+              if (_imageFront == null || _imageBack == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('두 이미지를 모두 선택해 주세요.'),
+                  ),
+                );
+              } else {
+                _showLoadingDialog();
+                await _extractTextFromImages();
+                Navigator.pop(context);
+                //로딩 창 닫기
+              }
+            },
+            child: const Text('이미지 추출하기'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showInitialDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('주의사항'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('1. 알약이 잘 보이게 찍어주세요.'),
+                Text('2. 빛반사가 일어나지 않도록 찍어주세요.'),
+                Text('3. 카메라 권한을 허용해주세요.')
               ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                if (_imageFront == null || _imageBack == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('두 이미지를 모두 선택해 주세요.'),
-                    ),
-                  );
-                } else {
-                  _showLoadingDialog();
-                  await _extractTextFromImages();
-                  Navigator.pop(context);
-                  //로딩 창 닫기
-                }
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
-              child: const Text('이미지 추출하기'),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -220,6 +261,45 @@ class _ImageTextSourceState extends State<ImageTextSource> {
           ),
         ),
       ),
+    );
+
+    // 60초 후에 로딩 다이얼로그 종료 및 "No Results" 다이얼로그 표시
+    Future.delayed(const Duration(seconds: 60), () {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(); // 로딩 다이얼로그 종료
+        showNoResultDialog(context);
+      }
+    });
+  }
+
+  void showNoResultDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('알약 찾기 실패'),
+          content: const Text('알약을 찾을 수 없습니다. 커뮤니티로 이동하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // '예' 버튼 클릭 시 커뮤니티 페이지로 이동
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Community()),
+                );
+              },
+              child: const Text('예'),
+            ),
+            TextButton(
+              onPressed: () {
+                // '아니요' 버튼 클릭 시 dialog 닫기
+                Navigator.of(context).pop();
+              },
+              child: const Text('아니요'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
