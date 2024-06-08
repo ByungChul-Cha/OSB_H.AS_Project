@@ -106,10 +106,10 @@ class _ImageTextSourceState extends State<ImageTextSource> {
         child: isFront
             ? (_imageFront != null
                 ? Image.file(File(_imageFront!.path), fit: BoxFit.cover)
-                : const Center(child: Text('앞쪽 이미지를 선택하세요.')))
+                : const Center(child: Text('정면 이미지')))
             : (_imageBack != null
                 ? Image.file(File(_imageBack!.path), fit: BoxFit.cover)
-                : const Center(child: Text('뒤쪽 이미지를 선택하세요.'))),
+                : const Center(child: Text('뒷면 이미지'))),
       ),
     );
   }
@@ -157,6 +157,9 @@ class _ImageTextSourceState extends State<ImageTextSource> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showInitialDialog(context);
+    });
   }
 
   @override
@@ -165,38 +168,71 @@ class _ImageTextSourceState extends State<ImageTextSource> {
       appBar: AppBar(
         title: const Text('카메라 검색'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildImageBox(true),
-                _buildImageBox(false),
+      body: _buildMainContent(context),
+    );
+  }
+
+  Widget _buildMainContent(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildImageBox(true),
+              _buildImageBox(false),
+            ],
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () async {
+              if (_imageFront == null || _imageBack == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('두 이미지를 모두 선택해 주세요.'),
+                  ),
+                );
+              } else {
+                _showLoadingDialog();
+                await _extractTextFromImages();
+                Navigator.pop(context);
+                //로딩 창 닫기
+              }
+            },
+            child: const Text('이미지 추출하기'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showInitialDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('주의사항'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('1. 알약이 잘 보이게 찍어주세요.'),
+                Text('2. 빛반사가 일어나지 않도록 찍어주세요.'),
+                Text('3. 카메라 권한을 허용해주세요.')
               ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                if (_imageFront == null || _imageBack == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('두 이미지를 모두 선택해 주세요.'),
-                    ),
-                  );
-                } else {
-                  _showLoadingDialog();
-                  await _extractTextFromImages();
-                  Navigator.pop(context);
-                  //로딩 창 닫기
-                }
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
-              child: const Text('이미지 추출하기'),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -222,4 +258,33 @@ class _ImageTextSourceState extends State<ImageTextSource> {
       ),
     );
   }
+}
+
+Future<void> _showInitialDialog(BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('주의사항'),
+        content: const SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('1. 알약이 잘 보이게 찍어주세요.'),
+              Text('2. 빛 반사가 일어나지 않도록 찍어주세요.'),
+              Text('3. 카메라 권한을 허용해주세요.')
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('확인'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

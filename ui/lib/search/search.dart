@@ -3,6 +3,7 @@ import 'package:has_app/result/search_result_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
+import '../community/community.dart';
 import '../utils/set_server_ip.dart';
 
 class SearchPage extends StatefulWidget {
@@ -127,7 +128,7 @@ class _SearchPageState extends State<SearchPage> {
                     Colors.purple,
                     Colors.grey,
                     Colors.black,
-                    Color.fromRGBO(255, 255, 255, 0.5),
+                    const Color.fromRGBO(255, 255, 255, 0.5),
                   ][index];
                   final textColor = buttonColor.computeLuminance() > 0.5
                       ? Colors.black
@@ -154,7 +155,18 @@ class _SearchPageState extends State<SearchPage> {
             ElevatedButton(
               onPressed: () {
                 // 입력된 정보로 검색 기능 구현
-                _sendSearchDataToServer();
+                if (inputText.isNotEmpty &&
+                    selectedShape.isNotEmpty &&
+                    selectedColor.isNotEmpty) {
+                  _sendSearchDataToServer();
+                } else {
+                  // 필요한 입력 값이 모두 채워지지 않은 경우 사용자에게 알림 표시
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('모든 입력 값을 채워주세요.'),
+                    ),
+                  );
+                }
               },
               child: const Text('검색'),
             ),
@@ -198,7 +210,35 @@ class _SearchPageState extends State<SearchPage> {
             ),
           );
         } else {
-          print('ITEM_SEQ is null');
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('알림'),
+                content: const Text('약을 찾을 수 없습니다. 커뮤니티 페이지로 이동하시겠습니까?'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Community(), // 커뮤니티 페이지로 이동
+                        ),
+                      );
+                    },
+                    child: const Text('예'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('아니오'),
+                  ),
+                ],
+              );
+            },
+          );
         }
       } else {
         print('Failed to send data to server: ${response.statusCode}');
