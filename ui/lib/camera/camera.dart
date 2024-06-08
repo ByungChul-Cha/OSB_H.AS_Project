@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import '../community/community.dart';
 import '../utils/set_server_ip.dart';
 import 'permission.dart';
 import 'dart:async';
@@ -69,7 +70,7 @@ class _ImageTextSourceState extends State<ImageTextSource> {
           await textDetector.processImage(inputImageBack);
 
       if (recognisedTextFront.text.isEmpty && recognisedTextBack.text.isEmpty) {
-        // 다이얼로그 보여주고 커뮤니티 창으로 이동
+        showNoResultDialog(context);
       } else {
         if (recognisedTextFront.text.isEmpty) {
           print('인식된 텍스트가 없습니다.');
@@ -131,8 +132,12 @@ class _ImageTextSourceState extends State<ImageTextSource> {
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
-        print('Data sent successfully');
-        saveDataToFirebaseStorage(response.body);
+        final responseData = jsonDecode(response.body) as List<dynamic>;
+        if (responseData.isEmpty) {
+          showNoResultDialog(context);
+        } else {
+          saveDataToFirebaseStorage(response.body);
+        }
         // Firebase Storage original_pilldata에 data.json 형태로 저장
         Navigator.pushReplacement(
           context,
@@ -256,6 +261,45 @@ class _ImageTextSourceState extends State<ImageTextSource> {
           ),
         ),
       ),
+    );
+
+    // 60초 후에 로딩 다이얼로그 종료 및 "No Results" 다이얼로그 표시
+    Future.delayed(const Duration(seconds: 60), () {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(); // 로딩 다이얼로그 종료
+        showNoResultDialog(context);
+      }
+    });
+  }
+
+  void showNoResultDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('알약 찾기 실패'),
+          content: const Text('알약을 찾을 수 없습니다. 커뮤니티로 이동하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // '예' 버튼 클릭 시 커뮤니티 페이지로 이동
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Community()),
+                );
+              },
+              child: const Text('예'),
+            ),
+            TextButton(
+              onPressed: () {
+                // '아니요' 버튼 클릭 시 dialog 닫기
+                Navigator.of(context).pop();
+              },
+              child: const Text('아니요'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
