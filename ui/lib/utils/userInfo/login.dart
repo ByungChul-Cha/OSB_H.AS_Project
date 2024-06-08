@@ -4,6 +4,10 @@ import 'package:has_app/main.dart';
 import 'package:has_app/utils/userInfo/signup.dart';
 
 class LoginScreen extends StatefulWidget {
+  final VoidCallback toggleTheme;
+
+  LoginScreen({required this.toggleTheme});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -21,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyHomePage()),
+        MaterialPageRoute(builder: (context) => MyHomePage(toggleTheme: widget.toggleTheme)),
       );
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -51,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _navigateToSignUP() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SignUpScreen()),
+      MaterialPageRoute(builder: (context) => SignUpScreen(toggleTheme: widget.toggleTheme)),
     );
     // 회원가입 화면으로 이동하기 위한 함수
   }

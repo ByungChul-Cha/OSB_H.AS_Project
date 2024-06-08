@@ -6,6 +6,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import "package:flutter/material.dart";
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:has_app/utils/userInfo/login.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -15,18 +18,35 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = false;
+
+  void _toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pill Search',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
+      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      home: MyHomePage(toggleTheme: _toggleTheme),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  final VoidCallback toggleTheme;
+
+  MyHomePage({required this.toggleTheme});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -34,6 +54,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String userName = '사용자';
   String userEmail = '이메일';
+  String profileImageUrl = '';
+  File? _image;
 
   @override
   void initState() {
@@ -45,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     fetchUserData();
   }
 
-  void fetchUserData() async {
+  Future<void> fetchUserData() async {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -58,12 +80,132 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           userName = userData['name'] ?? '이름 없음';
           userEmail = userData['email'] ?? '이메일 없음';
+          profileImageUrl = userData['profileImageUrl'] ?? '';
         });
       }
     }
   }
 
-  @override
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('선택된 이미지 없음');
+      }
+    });
+  }
+
+  Future<void> _uploadImage() async {
+    if (_image == null) return;
+
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        String fileName = 'profile_${user.uid}.png';
+        Reference firebaseStorageRef =
+            FirebaseStorage.instance.ref().child('profile_images/$fileName');
+        UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+        String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'profileImageUrl': downloadURL});
+
+        setState(() {
+          profileImageUrl = downloadURL;
+        });
+
+        print("프로필 사진 URL: $downloadURL");
+      }
+    } catch (e) {
+      print('이미지 업로드 오류: $e');
+    }
+  } //프로필 사진 업로드 코드
+
+    Future<void> _deleteImage() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        String fileName = 'profile_${user.uid}.png';
+        Reference firebaseStorageRef =
+            FirebaseStorage.instance.ref().child('profile_images/$fileName');
+        await firebaseStorageRef.delete();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'profileImageUrl': ''});
+
+        setState(() {
+          profileImageUrl = '';
+        });
+
+        print("프로필 사진 삭제");
+      }
+    } catch (e) {
+      print('프로필 사진 삭제 오류: $e');
+    }
+  } //프로필 사진 삭제 코드
+
+   void _showProfileDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('프로필 사진 삭제'),
+          content: const Text('프로필 사진을 기본으로 설정하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () async {
+                await _deleteImage();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } //프로필 사진 삭제 여부를 묻는 팝업
+
+  void _showThemeChangeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('테마 변경'),
+          content: const Text('테마를 변경하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                widget.toggleTheme();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } //테마 변경 여부를 묻는 팝업
+
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -77,6 +219,12 @@ class _MyHomePageState extends State<MyHomePage> {
         //타이틀의 색깔 설정
         backgroundColor: Colors.blue,
         //앱 바의 배경 색 설정
+        actions: [
+          IconButton(
+            icon: Icon(Icons.brightness_6),
+            onPressed: _showThemeChangeDialog,
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -117,12 +265,28 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           children: [
             UserAccountsDrawerHeader(
-              currentAccountPicture: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.account_circle,
-                  size: 70.0,
-                  color: Colors.grey,
+              currentAccountPicture: GestureDetector(
+                onTap: () async {
+                  await _pickImage();
+                  await _uploadImage();
+                },
+                onLongPress: () {
+                  if (profileImageUrl.isNotEmpty) {
+                     _showProfileDialog();
+                  }
+                },
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  backgroundImage: profileImageUrl.isNotEmpty
+                      ? NetworkImage(profileImageUrl)
+                      : null,
+                  child: profileImageUrl.isEmpty
+                      ? Icon(
+                          Icons.account_circle,
+                          size: 70.0,
+                          color: Colors.grey,
+                        )
+                      : null,
                 ),
               ),
               accountName: Text(userName),
@@ -153,7 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (context) => LoginScreen()));
+                                        builder: (context) => LoginScreen(toggleTheme: widget.toggleTheme)));
                               },
                             )
                           ],
@@ -172,7 +336,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               leading: const Icon(Icons.search),
               iconColor: Colors.black,
-              focusColor: Colors.black,
+              focusColor: Colors.grey,
               title: const Text('이름으로 검색'),
               onTap: () {
                 Navigator.push(context,
@@ -185,7 +349,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               leading: const Icon(Icons.photo_camera),
               iconColor: Colors.black,
-              focusColor: Colors.black,
+              focusColor: Colors.grey,
               title: const Text('카메라로 검색'),
               onTap: () {
                 Navigator.push(context,
@@ -198,15 +362,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               leading: const Icon(Icons.chat),
               iconColor: Colors.black,
-              focusColor: Colors.black,
+              focusColor: Colors.grey,
               title: const Text('커뮤니티'),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Community()));
+                 MaterialPageRoute(builder: (context) => Community()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),
-            //메뉴에  커뮤니티 창을 만듦
+            //메뉴에 커뮤니티 창을 만듦
           ],
         ),
       ),
