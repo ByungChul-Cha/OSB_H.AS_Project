@@ -10,12 +10,29 @@ git clone https://github.com/ByungChul-Cha/OSB_H.AS_Project.git
 ```
 
 2. Python 및 Dart, Flutter 설치
+
+3. 패키지 설치
+
+- python
+1. 가상환경 생성
+2. server 폴더로 이동한다.
+3. bash에 본 명령어를 입력한다.
+
+```python
+conda create -n PillSearch python=3.9.6
+conda activate PillSearch
+cd OSB_H.AS_Project/server/
+pip install -r requirements.txt
 ```
 
+-flutter
+1. ui 폴더로 이동한다.
+2. bash에 본 명령어를 입력한다.
+
+```dart
+cd OSB_H.AS_Project/ui/
+flutter pub get
 ```
-
-3. 시스템 환경변수 설정
-
 
 ## 의존성
 
@@ -64,4 +81,4 @@ flutter run main.dart
 ## 연락처
 
 - [차병철 (@ByungChul-Cha)](https://github.com/ByungChul-Cha) (lastsc1404@gmail.com)
-- 이민재 (@02LMJ)
+- [이민재 (@02LMJ)](https://github.com/02LMJ) (alswo3745@naver.com)
