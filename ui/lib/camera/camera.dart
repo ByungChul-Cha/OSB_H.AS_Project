@@ -259,32 +259,3 @@ class _ImageTextSourceState extends State<ImageTextSource> {
     );
   }
 }
-
-Future<void> _showInitialDialog(BuildContext context) async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('주의사항'),
-        content: const SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('1. 알약이 잘 보이게 찍어주세요.'),
-              Text('2. 빛 반사가 일어나지 않도록 찍어주세요.'),
-              Text('3. 카메라 권한을 허용해주세요.')
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('확인'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
