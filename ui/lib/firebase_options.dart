@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:has_app/utils/firebase_apiKey.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -42,7 +43,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC6B0otYW1I0bvhFtX4L1kzw-K_JqYRR6w',
+    apiKey: androidApiKey,
     appId: '1:85019325480:android:d8cc8f5a85a9c6988c311d',
     messagingSenderId: '85019325480',
     projectId: 'osb-project-9307e',
@@ -50,7 +51,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA8WWlDZCHfjDQth_LP-idx-uojcg283L4',
+    apiKey: iosApiKey,
     appId: '1:85019325480:ios:546f0cced0816f3a8c311d',
     messagingSenderId: '85019325480',
     projectId: 'osb-project-9307e',
@@ -59,7 +60,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCyDjNzHG2Uwt5rHb-y02PcSzjOjnKUdjs',
+    apiKey: webApiKey,
     appId: '1:85019325480:web:6831d0d4ccbc54d18c311d',
     messagingSenderId: '85019325480',
     projectId: 'osb-project-9307e',
@@ -69,7 +70,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA8WWlDZCHfjDQth_LP-idx-uojcg283L4',
+    apiKey: macosApiKey,
     appId: '1:85019325480:ios:546f0cced0816f3a8c311d',
     messagingSenderId: '85019325480',
     projectId: 'osb-project-9307e',
@@ -78,7 +79,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCyDjNzHG2Uwt5rHb-y02PcSzjOjnKUdjs',
+    apiKey: windowsApiKey,
     appId: '1:85019325480:web:121c47bfc55ca3818c311d',
     messagingSenderId: '85019325480',
     projectId: 'osb-project-9307e',
@@ -86,5 +87,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'osb-project-9307e.appspot.com',
     measurementId: 'G-H981VNDLQP',
   );
-
 }

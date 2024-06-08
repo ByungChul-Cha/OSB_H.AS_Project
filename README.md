@@ -1,27 +1,84 @@
-# OSB_H.AS_Project
+# Pill_Search
 
-A new Flutter project.
+본 프로젝트는 카메라로 알약 검색을 하는 기능, 커뮤니티 기능을 구현하였다. 카메라로 검색 기능을 통해 사용자에게 보다 빠르고 편하게 알약의 정보를 알려줄 수 있다. 또한, 커뮤니티 기능을 통해 약에 대한 정보 및 주의사항들을 서로 공유하여 빠르게 알 수 있도록 하였다.
 
-## Getting Started
+## 설치 방법
 
-This project is a starting point for a Flutter application.
+1. 프로젝트 클론받기
+```
+git clone https://github.com/ByungChul-Cha/OSB_H.AS_Project.git
+```
 
-A few resources to get you started if this is your first Flutter project:
+2. Python 및 Dart, Flutter 설치
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+3. 패키지 설치
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- python
+1. 가상환경 생성
+2. server 폴더로 이동한다.
+3. bash에 본 명령어를 입력한다.
 
-## Services
+```python
+conda create -n PillSearch python=3.9.6
+conda activate PillSearch
+cd OSB_H.AS_Project/server/
+pip install -r requirements.txt
+```
 
-- Medicine search with information
-- Medicine search with camera
-- Community for users
+-flutter
+1. ui 폴더로 이동한다.
+2. bash에 본 명령어를 입력한다.
 
-## Contributor
+```dart
+cd OSB_H.AS_Project/ui/
+flutter pub get
+```
 
-- 차병철 (@ByungChul-Cha) 
-- 이민재 (@02LMJ)
+## 의존성
+
+- python 3.9.6
+- dart 3.4.1
+- flutter 3.22.1
+
+- python
+1. 본 프로젝트를 클론받고 server 폴더로 이동한다.
+2. bash에 본 명령어를 입력한다.
+
+```python
+pip install -r requirements.txt
+```
+
+-flutter
+1. 본 프로젝트를 클론받고 ui 폴더로 이동한다.
+2. bash에 본 명령어를 입력한다.
+
+```dart
+flutter pub get
+```
+
+## 사용 방법
+
+모든 설정을 완료했다면 다음 과정을 실행한다.
+
+1. server 폴더로 이동
+
+```
+cd server/
+python flask_app.py
+```
+
+2. ui 폴더로 이동
+
+```
+cd ui/lib/
+flutter run main.dart
+```
+
+## 라이선스
+
+- [Apache License Version 2.0](https://github.com/ByungChul-Cha/OSB_H.AS_Project/blob/feature_search/LICENSE)
+
+## 연락처
+
+- [차병철 (@ByungChul-Cha)](https://github.com/ByungChul-Cha) (lastsc1404@gmail.com)
+- [이민재 (@02LMJ)](https://github.com/02LMJ) (alswo3745@naver.com)

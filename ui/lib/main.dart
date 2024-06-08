@@ -1,17 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'camera.dart';
+import 'camera/camera.dart';
 import 'community/community.dart';
-import 'search.dart';
-// 플러터의 위젯이랑 각종 기능들을 사용하기 위해 입력
+import 'search/search.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import "package:flutter/material.dart";
-import 'package:has_app/userInfo/login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:has_app/utils/userInfo/login.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,9 +35,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'H.AS App',
+      title: 'Pill Search',
       theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
-      home: LoginScreen(toggleTheme: _toggleTheme),
+      home: MyHomePage(toggleTheme: _toggleTheme),
     );
   }
 }
@@ -61,6 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      deleteSplitPillDataFolder();
+    });
+
     fetchUserData();
   }
 
@@ -206,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('H.AS Medi App'),
+        title: const Text('Pill Search'),
         //앱 상단에 뜨는 이름
         centerTitle: true,
         //이름을 중앙에 배치
@@ -222,6 +225,41 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: _showThemeChangeDialog,
           ),
         ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/image/pill.png',
+              width: 100,
+              height: 100,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Pill Search',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              '개발자 : 차병철, 이민재',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+            const Text(
+              '개발 기간 : 2024년 1학기 충북대학교 오픈소스 기초프로젝트',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -301,8 +339,8 @@ class _MyHomePageState extends State<MyHomePage> {
               focusColor: Colors.grey,
               title: const Text('이름으로 검색'),
               onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Search()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchPage()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),
@@ -315,7 +353,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('카메라로 검색'),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const CameraApp()));
+                    MaterialPageRoute(builder: (context) => ImageTextSource()));
               },
               trailing: const Icon(Icons.navigate_next),
             ),
@@ -338,5 +376,17 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       //메뉴 버튼을 만듦
     );
+  }
+}
+
+Future<void> deleteSplitPillDataFolder() async {
+  try {
+    final functions = FirebaseFunctions.instance;
+    final HttpsCallable callable =
+        functions.httpsCallable('deleteSplitPillDataFolder');
+    await callable.call();
+    print('split_pilldata folder deleted successfully');
+  } catch (e) {
+    print('Error deleting split_pilldata folder: $e');
   }
 }
